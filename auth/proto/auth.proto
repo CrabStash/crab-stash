@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "github.com/CrabStash/crab-stash/auth/proto";
+
+import "google/protobuf/empty.proto";
+
+message User {
+  string id = 1;
+  string email = 2;
+  string passwd = 3;
+}
+
+message Token {
+  string jwtToken = 1;
+}
+
+service AuthService {
+  rpc CreateUser (User) returns (google.protobuf.Empty);
+  rpc Login (User) returns (Token);
+}
