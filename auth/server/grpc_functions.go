@@ -8,13 +8,14 @@ import (
 	pb "github.com/CrabStash/crab-stash/auth/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*emptypb.Empty, error) {
 
 	isUserCreated := GetUser(req.Email)
-	if isUserCreated != (User{}) {
+	if isUserCreated.Email != "" {
 		return &emptypb.Empty{}, status.Errorf(
 			codes.AlreadyExists,
 			fmt.Sprintf("User already exists"),
@@ -30,7 +31,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*emptypb.Empty, 
 			fmt.Sprintf("Error while hashing password"),
 		)
 	}
-	user := User{
+	user := pb.User{
 		Email:  req.Email,
 		Passwd: pwd,
 	}
@@ -49,7 +50,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*emptypb.Empty, 
 func (s *Server) Login(ctx context.Context, req *pb.User) (*pb.Token, error) {
 	user := GetUser(req.Email)
 
-	if user == (User{}) {
+	if user.Email == "" {
 		return &pb.Token{}, status.Errorf(
 			codes.InvalidArgument,
 			fmt.Sprintf("Wrong password or email"),

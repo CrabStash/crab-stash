@@ -37,7 +37,7 @@ else
 endif
 
 .DEFAULT_GOAL := help
-.PHONY: auth help
+.PHONY: auth api help
 project := auth
 
 all: $(project) ## Generate Pbs and build
@@ -50,10 +50,13 @@ $(project):
 	go build -o ${BIN_DIR}/$@/${SERVER_BIN} ./$@/${SERVER_DIR}
 	go build -o ${BIN_DIR}/$@/${CLIENT_BIN} ./$@/${CLIENT_DIR}
 
+api: 
+	go build -o ${BIN_DIR}/api/ ./api
+
 test: all ## Launch tests
 	go test ./...
 
-clean: clean_greet clean_calculator clean_blog ## Clean generated files
+clean: clean_auth ## Clean generated files
 	${RM_F_CMD} ssl/*.crt
 	${RM_F_CMD} ssl/*.csr
 	${RM_F_CMD} ssl/*.key
