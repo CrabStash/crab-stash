@@ -29,7 +29,7 @@ WORKDIR $GOPATH/src/
 
 COPY ./services/$MSNAME/ .
 
-RUN go get -d -v ./cmd/$MSNAME/
+RUN go mod tidy && go get -d -v ./cmd/$MSNAME/
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build \
