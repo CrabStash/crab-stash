@@ -24,6 +24,6 @@ jobs:
           --file docker/Dockerfile \
           --tag ghcr.io/crabstash:${{ github.run_number }}
     - name: Log in to GitHub Container Registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u CrabStash --password-stdin
     - name: Push Docker image to GitHub Container Registry
-      run: docker push ghcr.io/${{ github.actor }}/auth:${{ github.run_number }}
+      run: docker push ghcr.io/CrabStash/auth:${{ github.run_number }}
