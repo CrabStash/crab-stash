@@ -20,7 +20,7 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build . \
-          --build-arg MS_NAME=${{ env.MS_NAME }} \
+          --build-arg MSNAME=${{ env.MSNAME }} \
           --file docker/Dockerfile \
           --tag ghcr.io/crabstash:${{ github.run_number }}
     - name: Log in to GitHub Container Registry
