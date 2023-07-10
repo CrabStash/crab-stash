@@ -1,10 +1,10 @@
-package main
+package handlers
 
 import (
 	"fmt"
 	"net/http"
 
-	pb "github.com/CrabStash/crab-stash/auth/proto"
+	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
 	"github.com/gin-gonic/gin"
 )
 

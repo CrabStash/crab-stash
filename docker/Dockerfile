@@ -27,17 +27,15 @@ RUN adduser \
 
 WORKDIR $GOPATH/src/
 
-COPY ./$MSNAME/ .
-COPY ./go.mod .
-COPY ./go.sum .
+COPY ./services/$MSNAME/ .
 
-
-RUN go mod tidy && go get
+RUN go get -d -v ./cmd/$MSNAME/
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build \
   -ldflags='-w -s -extldflags "-static"' -a \
-  -o $GOPATH/src/bin/ $GOPATH/src/server
+  -o /go/bin/exec ./cmd/$MSNAME/
+
 
 ############################
 # STEP 2 build a small image
@@ -51,7 +49,7 @@ COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 
 # Copy our static executable
-COPY --from=builder $GOPATH/src/bin/ /go/bin/exec
+COPY --from=builder /go/bin/exec /go/bin/exec
 
 # Use an unprivileged user.
 USER msuser:msuser

@@ -7,8 +7,6 @@
 3. Run your microservices binaries
 4. Run FE api gateway
 
-## Testing gRPC Servers
-If you wanna test just the gRPC servers we recommend using [evans](https://github.com/ktr0731/evans)
 
-## Makefile usage
-Use ```make help``` to get info on how to build your microservice
+## Build image
+Use ```make <microservice_name<``` to build Docker image

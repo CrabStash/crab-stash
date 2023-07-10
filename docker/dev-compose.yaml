@@ -2,26 +2,29 @@ version: "3.3"
 services: 
   surrealdb:
     image: surrealdb/surrealdb:latest
+    container_name: surrealdb
     ports:
       - 8000:8000
-    environment:
-      - user=root
-      - pass=root
+    expose:
+      - "8000"
+    command: start --user root --pass root
 
   api:
     image: crabstash-api
     ports:
       - 8080:8080
+    expose:
+      - "8080"
     depends_on:
-      - api
-    restart_policy:
-      condition: on-failure
+      - auth
+    restart: always
 
   auth:
     image: crabstash-auth
     ports:
       - 50051:50051
+    expose: 
+      - "50051"
     depends_on:
       - surrealdb
-    restart_policy:
-      condition: on-failure
+    restart: always

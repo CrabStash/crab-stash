@@ -1,15 +1,17 @@
-package main
+package functions
 
 import (
 	"fmt"
 	"log"
 
-	pb "github.com/CrabStash/crab-stash/auth/proto"
-	"github.com/surrealdb/surrealdb.go"
+	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
+	surrealdb "github.com/surrealdb/surrealdb.go"
 )
 
+var DB *surrealdb.DB
+
 func GetUser(email string) pb.User {
-	data, err := db.Query("SELECT * FROM users WHERE email = $userEmail", map[string]interface{}{
+	data, err := DB.Query("SELECT * FROM users WHERE email = $userEmail", map[string]interface{}{
 		"userEmail": email,
 	})
 
@@ -30,7 +32,7 @@ func GetUser(email string) pb.User {
 }
 
 func CreateUser(user pb.User) error {
-	_, err := db.Query("CREATE users:uuid() SET email = $email, passwd = $passwd", map[string]interface{}{
+	_, err := DB.Query("CREATE users:uuid() SET email = $email, passwd = $passwd", map[string]interface{}{
 		"email":  user.Email,
 		"passwd": user.Passwd,
 	})

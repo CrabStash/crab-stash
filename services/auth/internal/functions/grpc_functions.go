@@ -1,16 +1,21 @@
-package main
+package functions
 
 import (
 	"context"
 	"fmt"
 	"log"
 
-	pb "github.com/CrabStash/crab-stash/auth/proto"
+	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
+	"github.com/CrabStash/crab-stash/auth/internal/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 )
+
+type Server struct {
+	pb.AuthServiceServer
+}
 
 func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*emptypb.Empty, error) {
 
@@ -22,7 +27,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*emptypb.Empty, 
 		)
 	}
 
-	pwd, err := HashPassword(req.Passwd)
+	pwd, err := utils.HashPassword(req.Passwd)
 
 	if err != nil {
 		log.Printf("Error while hashing password: %v", err)
@@ -57,7 +62,7 @@ func (s *Server) Login(ctx context.Context, req *pb.User) (*pb.Token, error) {
 		)
 	}
 
-	ok := CheckPasswordHash(req.Passwd, user.Passwd)
+	ok := utils.CheckPasswordHash(req.Passwd, user.Passwd)
 	if !ok {
 		return &pb.Token{}, status.Errorf(
 			codes.InvalidArgument,
@@ -65,7 +70,7 @@ func (s *Server) Login(ctx context.Context, req *pb.User) (*pb.Token, error) {
 		)
 	}
 
-	token, err := SignJWT(user.Id)
+	token, err := utils.SignJWT(user.Id)
 	if err != nil {
 		return &pb.Token{}, status.Errorf(
 			codes.Internal,

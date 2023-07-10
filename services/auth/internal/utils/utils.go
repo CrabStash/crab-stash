@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"fmt"
@@ -44,7 +44,7 @@ func ValidateJWT(jwtToken string) bool {
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
-			return nil, err
+			return nil, fmt.Errorf("error while validating token")
 		}
 		return "", nil
 	})
