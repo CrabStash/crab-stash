@@ -27,9 +27,7 @@ RUN adduser \
 
 WORKDIR $GOPATH/src/
 
-COPY ./services/$MSNAME/ .
-
-RUN pwd && ls -las
+COPY ./$MSNAME/ .
 
 RUN go mod tidy && go get -d -v ./cmd/$MSNAME/
 
