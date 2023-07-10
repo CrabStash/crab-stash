@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      MS_NAME: api
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}    
+    - name: Build the Docker image
+      run: |
+        docker build . \
+          --build-arg MS_NAME=${{ env.MS_NAME }} \
+          --file docker/Dockerfile \
+          --tag ghcr.io/crabstash:${{ github.run_number }}
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: Push Docker image to GitHub Container Registry
+      run: docker push ghcr.io/crabstash:${{ github.run_number }}
