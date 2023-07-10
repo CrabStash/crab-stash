@@ -27,7 +27,7 @@ RUN adduser \
 
 WORKDIR $GOPATH/src/
 
-COPY ./$MSNAME/ .
+COPY services/$MSNAME .
 
 RUN pwd && ls -las
 
