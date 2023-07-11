@@ -29,7 +29,8 @@ func main() {
 
 	if _, err = functions.DB.Signin(map[string]interface{}{
 		"user": "root",
-		"pass": "root",
+		// "pass": "root",
+		"pass": "surrealdb",
 	}); err != nil {
 		log.Fatalf("Failed to signin to db: %v\n", err)
 	}
