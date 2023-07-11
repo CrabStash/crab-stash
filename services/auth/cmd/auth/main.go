@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	addr string = "auth:50051"
+	addr string = "auth-service.default.svc.cluster.local:50051"
+	// adr string = "auth:50051"
 )
 
 var err error
