@@ -18,7 +18,9 @@ const (
 var err error
 
 func main() {
-	functions.DB, err = surrealdb.New("ws://surrealdb:8000/rpc")
+	// functions.DB, err = surrealdb.New("ws://surrealdb:8000/rpc")  surrealdb-tikv.tidb-operator.svc.cluster.local:8000
+	functions.DB, err = surrealdb.New("ws://surrealdb-tikv.tidb-operator.svc.cluster.local:8000/rpc")
+	
 	defer functions.DB.Close()
 
 	if err != nil {
