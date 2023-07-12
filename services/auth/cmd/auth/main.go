@@ -40,7 +40,7 @@ func main() {
 		log.Fatalf("Failed to use users/users: %v\n", err)
 	}
 
-	lis, err := net.Listen("tcp", addr)
+	lis, err := net.Listen("tcp", ":50051")
 
 	if err != nil {
 		log.Fatalf("Failed to listen on: %v\n", err)
