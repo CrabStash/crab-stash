@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/caarlos0/env/v9 v9.0.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/stretchr/testify v1.8.3 // indirect

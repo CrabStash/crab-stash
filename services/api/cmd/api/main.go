@@ -4,6 +4,7 @@ import (
 	"log"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
+	"github.com/CrabStash/crab-stash/api/internal/config"
 	"github.com/CrabStash/crab-stash/api/internal/routes"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
@@ -11,7 +12,8 @@ import (
 )
 
 func main() {
-	conn, err := grpc.Dial("auth-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	config.InitializeConfig()
+	conn, err := grpc.Dial(config.Cfg.GetGrpcServer(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to connect to GRPC server: %v\n", err)
 	}
@@ -22,5 +24,5 @@ func main() {
 	r := gin.Default()
 	routes.AuthRoutes(r, c)
 
-	r.Run(":8080")
+	r.Run(config.Cfg.GetAddr())
 }

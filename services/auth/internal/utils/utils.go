@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/CrabStash/crab-stash/auth/config"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,7 +30,7 @@ func SignJWT(userID string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(10 * time.Minute)
+	claims["exp"] = time.Now().Add(time.Duration(config.Cfg.GetJWTDuration()) * time.Minute)
 	claims["id"] = userID
 
 	tokenString, err := token.SignedString(sampleSecret)

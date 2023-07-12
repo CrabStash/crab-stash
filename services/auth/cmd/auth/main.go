@@ -5,23 +5,21 @@ import (
 	"net"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
+	"github.com/CrabStash/crab-stash/auth/config"
 	"github.com/CrabStash/crab-stash/auth/internal/functions"
 	surrealdb "github.com/surrealdb/surrealdb.go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
-const (
-	addr string = "localhost:50051"
-	// adr string = "auth:50051"
-)
-
 var err error
 
 func main() {
+
+	config.InitializeConfig()
 	// functions.DB, err = surrealdb.New("ws://surrealdb:8000/rpc")  surrealdb-tikv.tidb-operator.svc.cluster.local:8000
-	functions.DB, err = surrealdb.New("ws://surrealdb-tikv.tidb-operator.svc.cluster.local:8000/rpc")
-	
+	functions.DB, err = surrealdb.New(config.Cfg.GetDbAddr())
+
 	defer functions.DB.Close()
 
 	if err != nil {
@@ -46,7 +44,7 @@ func main() {
 		log.Fatalf("Failed to listen on: %v\n", err)
 	}
 
-	log.Printf("Listening on: %v\n", addr)
+	log.Printf("Listening on: %v\n", config.Cfg.GetAddr())
 
 	s := grpc.NewServer()
 	serverStruct := functions.Server{}
