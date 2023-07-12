@@ -53,7 +53,6 @@ COPY --from=builder /etc/group /etc/group
 # Copy our static executable
 COPY --from=builder /go/bin/exec /go/bin/exec
 
-EXPOSE 50051
 # Use an unprivileged user.
 USER msuser:msuser
 
