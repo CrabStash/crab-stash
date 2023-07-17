@@ -29,8 +29,6 @@ WORKDIR $GOPATH/src/
 
 COPY services/$MSNAME .
 
-RUN pwd && ls -las
-
 RUN go mod tidy && go get -d -v ./cmd/$MSNAME/
 
 # Build the binary

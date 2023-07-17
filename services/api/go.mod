@@ -3,7 +3,7 @@ module github.com/CrabStash/crab-stash/api
 go 1.18
 
 require (
-	github.com/CrabStash/crab-stash-protofiles v0.0.0-20230709195959-aa5c39b29f05
+	github.com/CrabStash/crab-stash-protofiles v0.2.1
 	github.com/gin-gonic/gin v1.9.1
 	google.golang.org/grpc v1.56.2
 )

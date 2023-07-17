@@ -1,5 +1,5 @@
-github.com/CrabStash/crab-stash-protofiles v0.0.0-20230709195959-aa5c39b29f05 h1:TkJRlRuzaOGI92b96JprSFg3zzimVubx7CJuuUX9/7M=
-github.com/CrabStash/crab-stash-protofiles v0.0.0-20230709195959-aa5c39b29f05/go.mod h1:uBsFXZIrxSldpShnQi6aGsrvaeMKCBHNz+urcQfd/EI=
+github.com/CrabStash/crab-stash-protofiles v0.2.1 h1:c47phwGyu2g5Jbd7WR9vJ+G0qKoZruV9ExV+plgDLO4=
+github.com/CrabStash/crab-stash-protofiles v0.2.1/go.mod h1:uBsFXZIrxSldpShnQi6aGsrvaeMKCBHNz+urcQfd/EI=
 github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1O2AihPM=
 github.com/bytedance/sonic v1.9.1 h1:6iJ6NqdoxCDr6mbY8h18oSO+cShGSMRGCEo7F2h0x8s=
 github.com/bytedance/sonic v1.9.1/go.mod h1:i736AoUSYt75HyZLoJW9ERYxcy6eaN6h4BZXU064P/U=
