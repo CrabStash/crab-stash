@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
 	"github.com/gin-gonic/gin"
@@ -28,5 +30,11 @@ func Refresh(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
+	token_exp, err := strconv.ParseInt(os.Getenv("REFRESH_EXP"), 10, 64)
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("error parsing env"))
+	}
+
+	ctx.SetCookie("access_token", res.Token, 24*60*60*int(token_exp), "/", os.Getenv("DOMAIN"), false, true)
 	ctx.JSON(http.StatusOK, res)
 }

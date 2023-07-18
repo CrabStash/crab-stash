@@ -1,6 +1,9 @@
 package auth
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/CrabStash/crab-stash/api/internal/auth/routes"
+	"github.com/gin-gonic/gin"
+)
 
 func RegisterRoutes(r *gin.Engine) *ServiceClient {
 	svc := &ServiceClient{
@@ -10,24 +13,24 @@ func RegisterRoutes(r *gin.Engine) *ServiceClient {
 	routes := r.Group("/auth")
 	routes.POST("/register", svc.Register)
 	routes.POST("/login", svc.Login)
-	routes.POST("/logout", svc.Logout)
-	routes.POST("/refresh", svc.Refresh)
+	routes.GET("/logout", svc.Logout)
+	routes.GET("/refresh", svc.Refresh)
 
 	return svc
 }
 
 func (svc *ServiceClient) Register(ctx *gin.Context) {
-
+	routes.Register(ctx, svc.Client)
 }
 
 func (svc *ServiceClient) Login(ctx *gin.Context) {
-
+	routes.Login(ctx, svc.Client)
 }
 
 func (svc *ServiceClient) Logout(ctx *gin.Context) {
-
+	routes.Logout(ctx, svc.Client)
 }
 
 func (svc *ServiceClient) Refresh(ctx *gin.Context) {
-
+	routes.Refresh(ctx, svc.Client)
 }

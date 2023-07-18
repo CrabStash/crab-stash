@@ -32,7 +32,7 @@ func (c *AuthMiddlewareConfig) AuthRequired(ctx *gin.Context) {
 		return
 	}
 
-	_, err := c.svc.Client.Validate(context.Background(), &pb.ValidateRequest{
+	uuid, err := c.svc.Client.Validate(context.Background(), &pb.ValidateRequest{
 		Token: token[1],
 	})
 
@@ -41,5 +41,6 @@ func (c *AuthMiddlewareConfig) AuthRequired(ctx *gin.Context) {
 		return
 	}
 
+	ctx.Set("uuid", uuid)
 	ctx.Next()
 }

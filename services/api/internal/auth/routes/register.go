@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
@@ -13,6 +14,11 @@ func Register(ctx *gin.Context, c pb.AuthServiceClient) {
 
 	if err := ctx.BindJSON(&payload); err != nil {
 		ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if payload.Email == "" || payload.Passwd == "" {
+		ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("email or password missing"))
 		return
 	}
 
