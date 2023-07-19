@@ -82,12 +82,12 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 }
 
 func (s *Server) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
-	uuid, token_uuid, err := s.Jwt.ValidateJWT(req.Token, true)
+	_, token_uuid, err := s.Jwt.ValidateJWT(req.Token, true)
 	if err != nil {
 		return &pb.LogoutResponse{}, fmt.Errorf("error validating token: %v", err.Error())
 	}
 
-	_, err = s.R.Del(ctx, uuid, token_uuid).Result()
+	_, err = s.R.Del(ctx, token_uuid).Result()
 	if err != nil {
 		return &pb.LogoutResponse{}, fmt.Errorf("error deleting tokens: %v", err.Error())
 	}

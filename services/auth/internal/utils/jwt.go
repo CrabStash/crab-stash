@@ -77,7 +77,7 @@ func (w *JwtWrapper) ValidateJWT(jwtToken string, isRefresh bool) (uuid string, 
 		return "", "", fmt.Errorf("could not decode private key: %v", err.Error())
 	}
 
-	key, err := jwt.ParseRSAPrivateKeyFromPEM(decodedPK)
+	key, err := jwt.ParseRSAPublicKeyFromPEM(decodedPK)
 	if err != nil {
 		return "", "", fmt.Errorf("could not parse private key: %v", err.Error())
 	}
@@ -97,6 +97,7 @@ func (w *JwtWrapper) ValidateJWT(jwtToken string, isRefresh bool) (uuid string, 
 	if !ok || !parsedToken.Valid {
 		return "", "", fmt.Errorf("invalid token")
 	}
-	return fmt.Sprint(claims["sub"]), fmt.Sprint(claims["tokenuuid"]), nil
+
+	return claims["sub"].(string), claims["TokenUUID"].(string), nil
 
 }
