@@ -10,10 +10,12 @@ func RegisterRoutes(r *gin.Engine) *ServiceClient {
 		Client: InitServiceClient(),
 	}
 
+	a := InitAuthMiddleware(svc)
+
 	routes := r.Group("/auth")
 	routes.POST("/register", svc.Register)
 	routes.POST("/login", svc.Login)
-	routes.GET("/logout", svc.Logout)
+	routes.GET("/logout", a.AuthRequired, svc.Logout)
 	routes.GET("/refresh", svc.Refresh)
 
 	return svc

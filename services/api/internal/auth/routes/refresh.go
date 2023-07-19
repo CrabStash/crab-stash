@@ -30,7 +30,7 @@ func Refresh(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
-	token_exp, err := strconv.ParseInt(os.Getenv("REFRESH_EXP"), 10, 64)
+	token_exp, err := strconv.ParseInt(os.Getenv("TOKEN_EXP"), 10, 64)
 	if err != nil {
 		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("error parsing env"))
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
@@ -18,7 +19,21 @@ func Logout(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
-	res, err := c.Logout(context.Background(), &pb.LogoutRequest{Token: refresh_token})
+	auth := ctx.Request.Header.Get("authorization")
+
+	if auth == "" {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	token := strings.Split(auth, "Bearer ")
+
+	if len(token) < 2 {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	res, err := c.Logout(context.Background(), &pb.LogoutRequest{Token: token[1], Refresh: refresh_token})
 	if err != nil {
 		ctx.AbortWithError(http.StatusBadGateway, err)
 		return

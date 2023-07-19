@@ -35,7 +35,7 @@ func Login(ctx *gin.Context, c pb.AuthServiceClient) {
 		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("error parsing env"))
 	}
 
-	token_exp, err := strconv.ParseInt(os.Getenv("REFRESH_EXP"), 10, 64)
+	token_exp, err := strconv.ParseInt(os.Getenv("TOKEN_EXP"), 10, 64)
 	if err != nil {
 		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("error parsing env"))
 	}

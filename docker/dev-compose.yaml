@@ -22,6 +22,7 @@ services:
     environment:
       AUTH_MS_ADDR: "auth-service:50051"
       REFRESH_EXP: "7"
+      TOKEN_EXP: "2"
       DOMAIN: "localhost"
 
   auth:
