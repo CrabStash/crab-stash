@@ -34,14 +34,14 @@ func Init() Handler {
 		log.Fatalf("Failed to signin to db: %v\n", err.Error())
 	}
 
-	if _, err = db.Use("users", "users"); err != nil {
-		log.Fatalf("Failed to use users/users: %v\n", err.Error())
+	if _, err = db.Use("crabstash", "data"); err != nil {
+		log.Fatalf("Failed to use crabstash/data: %v\n", err.Error())
 	}
 	return Handler{db}
 }
 
 func (h *Handler) GetUserByEmail(email string) (UserCrucial, error) {
-	data, err := h.DB.Query("SELECT email, passwd, id FROM users WHERE email = $userEmail", map[string]interface{}{
+	data, err := h.DB.Query("SELECT email, passwd, id FROM user WHERE email = $userEmail", map[string]interface{}{
 		"userEmail": email,
 	})
 
@@ -62,7 +62,7 @@ func (h *Handler) GetUserByEmail(email string) (UserCrucial, error) {
 }
 
 func (h *Handler) GetUserByUUID(uuid string) (UserCrucial, error) {
-	data, err := h.DB.Query("SELECT id FROM users WHERE id = $id", map[string]interface{}{
+	data, err := h.DB.Query("SELECT id FROM $id", map[string]interface{}{
 		"id": uuid,
 	})
 
@@ -92,12 +92,10 @@ func (h *Handler) CreateUser(user *pb.RegisterRequest) error {
 		return fmt.Errorf("error while hashing passwd: %v", err.Error())
 	}
 
-	_, err = h.DB.Query("CREATE users:uuid() SET email = $email, passwd = $passwd, firstName = $firstName, lastName = $lastName", map[string]interface{}{
-		"email":     user.Email,
-		"passwd":    hash,
-		"firstName": user.FirstName,
-		"lastName":  user.LastName,
-	})
+	hashedUser := user
+	hashedUser.Passwd = hash
+
+	_, err = h.DB.Create("user:uuid()", hashedUser)
 	if err != nil {
 		return fmt.Errorf("error while creating user: %v", err)
 	}

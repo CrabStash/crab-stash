@@ -4,14 +4,13 @@ import (
 	"context"
 	"net/http"
 
-	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
+	pb "github.com/CrabStash/crab-stash-protofiles/warehouse/proto"
 	valid "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 )
 
-func Register(ctx *gin.Context, c pb.AuthServiceClient) {
-	payload := pb.RegisterRequest{}
-
+func AddUser(ctx *gin.Context, c pb.WarehouseServiceClient) {
+	payload := pb.AddUsersRequest{}
 	if err := ctx.BindJSON(&payload); err != nil {
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -24,11 +23,10 @@ func Register(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
-	res, err := c.Register(context.Background(), &payload)
+	res, err := c.AddUsersToWarehouse(context.Background(), &payload)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, res)
 		return
 	}
-
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusCreated, res)
 }

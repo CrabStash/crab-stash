@@ -32,7 +32,8 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 		return &pb.RegisterResponse{}, err
 	}
 	return &pb.RegisterResponse{
-		Status: "user created",
+		Status:   "ok",
+		Response: "user created",
 	}, nil
 }
 
@@ -98,7 +99,8 @@ func (s *Server) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutR
 	}
 
 	return &pb.LogoutResponse{
-		Status: "logout successful",
+		Status:   "ok",
+		Response: "logout successful",
 	}, nil
 
 }

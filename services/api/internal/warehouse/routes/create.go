@@ -4,18 +4,20 @@ import (
 	"context"
 	"net/http"
 
-	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
+	pb "github.com/CrabStash/crab-stash-protofiles/warehouse/proto"
 	valid "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 )
 
-func Register(ctx *gin.Context, c pb.AuthServiceClient) {
-	payload := pb.RegisterRequest{}
-
+func Create(ctx *gin.Context, c pb.WarehouseServiceClient) {
+	payload := pb.CreateRequest{}
 	if err := ctx.BindJSON(&payload); err != nil {
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+
+	uuid, _ := ctx.Get("uuid")
+	payload.OwnerID = uuid.(string)
 
 	_, err := valid.ValidateStruct(&payload)
 
@@ -24,11 +26,10 @@ func Register(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
-	res, err := c.Register(context.Background(), &payload)
+	res, err := c.CreateWarehouse(context.Background(), &payload)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, res)
 		return
 	}
-
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusCreated, gin.H{"warehouse_id": res.WarehouseID})
 }
