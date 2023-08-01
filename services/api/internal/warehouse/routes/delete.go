@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 )
 
 func Delete(ctx *gin.Context, c pb.WarehouseServiceClient) {
-	id := strings.Split(ctx.Param("id"), "/")[1]
+	id := strings.Split(ctx.Param("id"), "/")[0]
 
 	payload := pb.DeleteRequest{}
 	payload.WarehouseID = id
@@ -19,13 +20,15 @@ func Delete(ctx *gin.Context, c pb.WarehouseServiceClient) {
 	_, err := valid.ValidateStruct(&payload)
 
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "response": err.Error()})
 		return
 	}
 
 	res, err := c.DeleteWarehouse(context.Background(), &payload)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, res)
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "response": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusCreated, res)

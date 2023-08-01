@@ -13,10 +13,10 @@ type Handler struct {
 	DB *surrealdb.DB
 }
 
-type UserCrucial struct {
-	Email  string `json:"email"`
-	Id     string `json:"id"`
-	Passwd string `json:"passwd"`
+type Transaction struct {
+	Result []map[string]interface{} `json:"result"`
+	Status string                   `json:"status"`
+	Time   string                   `json:"time"`
 }
 
 func Init() Handler {
@@ -50,9 +50,9 @@ func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 		owner: $userID,
 		isPhysical: $isPhysical,
 		capacity: $capacity
-	};
-	UPDATE $userID SET owns += $warehouse;
-	RELATE $userID -> manages -> $warehouse SET roles = ["owner"];
+	} RETURN id;
+	UPDATE $userID SET owns += $warehouse RETURN NONE;
+	RELATE $userID -> manages -> $warehouse SET roles = ["owner"] RETURN NONE;
 	COMMIT TRANSACTION;
 	`, map[string]interface{}{
 		"userID":     data.OwnerID,
@@ -64,35 +64,51 @@ func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 	})
 
 	if err != nil {
-		return "", fmt.Errorf("error while creating warehouse: %v", err)
+		log.Println(err)
+		return "", fmt.Errorf("error while creating warehouse: %v", err.Error())
 	}
 
-	fmt.Printf("%v RESPONSE", res)
+	var finalRes []Transaction
 
-	return "ok", nil
+	err = surrealdb.Unmarshal(res, &finalRes)
+
+	if err != nil {
+		log.Println(err)
+		return "", fmt.Errorf("error while unmarshaling data")
+	}
+
+	warehouseID, ok := finalRes[1].Result[0]["id"].(string)
+	if !ok {
+		log.Println(err)
+		return "", fmt.Errorf("error while asserting type")
+	}
+
+	return warehouseID, nil
 }
 
-func (h *Handler) GetInfo(data *pb.GetInfoRequest) (pb.GetInfoResponse, error) {
-	queryRes, err := h.DB.Query("SELECT * FROM $warehouse;", map[string]string{
-		"warehouse": data.WarehouseID,
-	})
+func (h *Handler) GetInfo(data *pb.GetInfoRequest) (*pb.GetInfoResponse, error) {
+	queryRes, err := h.DB.Select(data.WarehouseID)
+
 	if err != nil {
-		return pb.GetInfoResponse{}, fmt.Errorf("error while querying db: %v", err.Error())
+		log.Println(err)
+		return &pb.GetInfoResponse{}, fmt.Errorf("error while querying db: %v", err)
 	}
 
-	var res pb.GetInfoResponse
-	err = surrealdb.Unmarshal(queryRes, &res)
+	res := &pb.GetInfoResponse{}
+	err = surrealdb.Unmarshal(queryRes, res)
 	if err != nil {
-		return pb.GetInfoResponse{}, fmt.Errorf("error while unmarshalling data: %v", err.Error())
+		log.Println(err)
+		return &pb.GetInfoResponse{}, fmt.Errorf("error while unmarshalling data: %v", err)
 	}
 
 	return res, nil
 }
 
 func (h *Handler) UpdateWarehouse(data *pb.UpdateRequest) (pb.UpdateResponse, error) {
-	_, err := h.DB.Update(data.WarehouseID, data)
+	_, err := h.DB.Change(data.WarehouseID, data)
 	if err != nil {
-		return pb.UpdateResponse{}, fmt.Errorf("error while updating record: %v", err.Error())
+		log.Println(err)
+		return pb.UpdateResponse{}, fmt.Errorf("error while updating record: %v", err)
 	}
 	return pb.UpdateResponse{Status: "ok", Response: "record updated"}, nil
 }
@@ -100,18 +116,20 @@ func (h *Handler) UpdateWarehouse(data *pb.UpdateRequest) (pb.UpdateResponse, er
 func (h *Handler) DeleteWarehouse(data *pb.DeleteRequest) (pb.DeleteResponse, error) {
 	_, err := h.DB.Delete(data.WarehouseID)
 	if err != nil {
-		return pb.DeleteResponse{}, fmt.Errorf("error while deleting warehouse: %v", err.Error())
+		log.Println(err)
+		return pb.DeleteResponse{}, fmt.Errorf("error while deleting warehouse: %v", err)
 	}
 	return pb.DeleteResponse{Status: "ok", Response: "warehouse deleted"}, nil
 }
 
 func (h *Handler) AddUserToWarehouse(data *pb.AddUsersRequest) (pb.AddUsersResponse, error) {
-	_, err := h.DB.Query("RELATE $userID -> manages -> $warehouse SET roles = ['display'];", map[string]string{
+	_, err := h.DB.Query("RELATE $userID -> manages -> $warehouse SET roles = [];", map[string]string{
 		"warehouse": data.WarehouseID,
 		"userID":    data.UserIds,
 	})
 	if err != nil {
-		return pb.AddUsersResponse{}, fmt.Errorf("error while adding user to warehouse: %v", err.Error())
+		log.Println(err)
+		return pb.AddUsersResponse{}, fmt.Errorf("error while adding user to warehouse: %v", err)
 	}
 	return pb.AddUsersResponse{Status: "ok", Response: "user added to warehouse"}, nil
 }
@@ -122,7 +140,8 @@ func (h *Handler) RemoveUserFromWarehouse(data *pb.RemoveUserRequest) (pb.Remove
 		"userID":    data.UserIds,
 	})
 	if err != nil {
-		return pb.RemoveUserResponse{}, fmt.Errorf("error while adding user to warehouse: %v", err.Error())
+		log.Println(err)
+		return pb.RemoveUserResponse{}, fmt.Errorf("error while adding user to warehouse: %v", err)
 	}
 	return pb.RemoveUserResponse{Status: "ok", Response: "user added to warehouse"}, nil
 }

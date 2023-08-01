@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 
@@ -12,18 +13,19 @@ import (
 
 func GetInfo(ctx *gin.Context, c pb.WarehouseServiceClient) {
 	payload := pb.GetInfoRequest{}
-	payload.WarehouseID = strings.Split(ctx.Param("id"), "/")[1]
-
+	payload.WarehouseID = strings.Split(ctx.Param("id"), "/")[0]
 	_, err := valid.ValidateStruct(&payload)
 
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "response": err.Error()})
 		return
 	}
 
 	res, err := c.GetInfo(context.Background(), &payload)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, res)
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "response": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusCreated, res)

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/warehouse/proto"
@@ -19,13 +20,15 @@ func AddUser(ctx *gin.Context, c pb.WarehouseServiceClient) {
 	_, err := valid.ValidateStruct(&payload)
 
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "response": err.Error()})
 		return
 	}
 
 	res, err := c.AddUsersToWarehouse(context.Background(), &payload)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, res)
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "response": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusCreated, res)

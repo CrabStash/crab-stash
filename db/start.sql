@@ -4,7 +4,7 @@ DEFINE TABLE user SCHEMAFULL;
 DEFINE TABLE warehouse SCHEMAFULL;
 DEFINE TABLE manages SCHEMAFULL;
 DEFINE TABLE fields SCHEMALESS;
-DEFINE TABLE entities SCHEMALESS;
+DEFINE TABLE entities SCHEMAFULL;
 DEFINE TABLE categories SCHEMAFULL;
 
 DEFINE FIELD email ON TABLE user TYPE string
@@ -67,52 +67,14 @@ DEFINE FIELD roles.* ON TABLE manages TYPE string;
 
 DEFINE INDEX unique_relationships ON TABLE manages COLUMNS in, out UNIQUE;
 
-COMMIT TRANSACTION;
-
-CREATE user CONTENT {
-  email: "omikolajczak@edu.cdv.pl",
-  firstName: "Oskar",
-  lastName: "Mikołajczak",
-  passwd: "uwu",
-  avatar: null,
-  owns: []
-};
-
-CREATE user CONTENT {
-  email: "omikolajczak@edu.cdv.eu",
-  lastName: "Mikołajczak",
-  passwd: "uwu",
-  avatar: null,
-  owns: []
-};
-
-CREATE user CONTENT {
-  email: "omikolajczak@edu.cdv.com",
-  firstName: "",
-  lastName: "Mikołajczak",
-  passwd: "uwu",
-  avatar: null,
-  owns: []
-};
-
-CREATE warehouse CONTENT {
-  name: "Masny magazyn",
-  desc: "Najmaśniejszy magazyn po tej stronie wisły",
-  logo: null,
-  owner: "user:jnnh8c8ruxd18epww4p3",
-  fields: [],
-  categories: [],
-  entities: []
-}
-
-UPDATE user:jnnh8c8ruxd18epww4p3 MERGE {
-  owns: ["warehouse:a0hc4m47w6a4oxoi0pow", "warehouse:s4ts7y4fzghu93yzkoni", "masno"]
-};
-
-RELATE user:jnnh8c8ruxd18epww4p3 -> manages -> warehouse:a0hc4m47w6a4oxoi0pow
-  SET roles = ["owner"];
+DEFINE FIELD data ON TABLE entities type object
+  ASSERT $value != NULL AND $value != NONE;
+DEFINE FIELD meta ON TABLE entities type object
+  ASSERT $value != NULL AND $value != NONE;
+DEFINE FIELD meta.status ON TABLE entities type string;
+DEFINE FIELD meta.release ON TABLE entities type datetime;
+DEFINE FIELD meta.discount ON TABLE entities type number;
+DEFINE FIELD meta.discount_deadline ON TABLE entities type datetime;
 
 
-BEGIN TRANSACTION;
-  
 COMMIT TRANSACTION;
