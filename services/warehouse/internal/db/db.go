@@ -7,6 +7,7 @@ import (
 
 	pb "github.com/CrabStash/crab-stash-protofiles/warehouse/proto"
 	surrealdb "github.com/surrealdb/surrealdb.go"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Handler struct {
@@ -86,62 +87,98 @@ func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 	return warehouseID, nil
 }
 
-func (h *Handler) GetInfo(data *pb.GetInfoRequest) (*pb.GetInfoResponse, error) {
+func (h *Handler) GetInfo(data *pb.GetInfoRequest) (*pb.GetInfoResponse_Data, error) {
 	queryRes, err := h.DB.Select(data.WarehouseID)
 
 	if err != nil {
 		log.Println(err)
-		return &pb.GetInfoResponse{}, fmt.Errorf("error while querying db: %v", err)
+		return &pb.GetInfoResponse_Data{}, fmt.Errorf("error while querying db: %v", err)
 	}
 
-	res := &pb.GetInfoResponse{}
-	err = surrealdb.Unmarshal(queryRes, res)
+	res := &pb.GetInfoResponse_Data{
+		Data: &pb.GetInfoResponse_Response{},
+	}
+	err = surrealdb.Unmarshal(queryRes, res.Data)
 	if err != nil {
 		log.Println(err)
-		return &pb.GetInfoResponse{}, fmt.Errorf("error while unmarshalling data: %v", err)
+		return &pb.GetInfoResponse_Data{}, fmt.Errorf("error while unmarshalling data: %v", err)
 	}
 
 	return res, nil
 }
 
-func (h *Handler) UpdateWarehouse(data *pb.UpdateRequest) (pb.UpdateResponse, error) {
+func (h *Handler) UpdateWarehouse(data *pb.UpdateRequest) error {
 	_, err := h.DB.Change(data.WarehouseID, data)
 	if err != nil {
 		log.Println(err)
-		return pb.UpdateResponse{}, fmt.Errorf("error while updating record: %v", err)
+		return fmt.Errorf("error while updating record: %v", err)
 	}
-	return pb.UpdateResponse{Status: "ok", Response: "record updated"}, nil
+	return nil
 }
 
-func (h *Handler) DeleteWarehouse(data *pb.DeleteRequest) (pb.DeleteResponse, error) {
+func (h *Handler) DeleteWarehouse(data *pb.DeleteRequest) error {
 	_, err := h.DB.Delete(data.WarehouseID)
 	if err != nil {
 		log.Println(err)
-		return pb.DeleteResponse{}, fmt.Errorf("error while deleting warehouse: %v", err)
+		return fmt.Errorf("error while deleting warehouse: %v", err)
 	}
-	return pb.DeleteResponse{Status: "ok", Response: "warehouse deleted"}, nil
+	return nil
 }
 
-func (h *Handler) AddUserToWarehouse(data *pb.AddUsersRequest) (pb.AddUsersResponse, error) {
+func (h *Handler) AddUserToWarehouse(data *pb.AddUsersRequest) error {
 	_, err := h.DB.Query("RELATE $userID -> manages -> $warehouse SET roles = [];", map[string]string{
 		"warehouse": data.WarehouseID,
 		"userID":    data.UserIds,
 	})
 	if err != nil {
 		log.Println(err)
-		return pb.AddUsersResponse{}, fmt.Errorf("error while adding user to warehouse: %v", err)
+		return fmt.Errorf("error while adding user to warehouse: %v", err)
 	}
-	return pb.AddUsersResponse{Status: "ok", Response: "user added to warehouse"}, nil
+	return nil
 }
 
-func (h *Handler) RemoveUserFromWarehouse(data *pb.RemoveUserRequest) (pb.RemoveUserResponse, error) {
+func (h *Handler) RemoveUserFromWarehouse(data *pb.RemoveUserRequest) error {
 	_, err := h.DB.Query("DELETE $userID -> manages WHERE out=$warehouse;", map[string]string{
 		"warehouse": data.WarehouseID,
 		"userID":    data.UserIds,
 	})
 	if err != nil {
 		log.Println(err)
-		return pb.RemoveUserResponse{}, fmt.Errorf("error while adding user to warehouse: %v", err)
+		return fmt.Errorf("error while adding user to warehouse: %v", err)
 	}
-	return pb.RemoveUserResponse{Status: "ok", Response: "user added to warehouse"}, nil
+	return nil
+}
+
+func (h *Handler) FetchWarehouses(data *pb.InternalFetchWarehousesRequest) (*pb.InternalFetchWarehousesResponse, error) {
+	queryRes, err := h.DB.Query("SELECT out as warehouseID, roles FROM manages WHERE in = $userID", map[string]string{
+		"userID": data.UserID,
+	})
+
+	if err != nil {
+		log.Println(err)
+		return &pb.InternalFetchWarehousesResponse{}, fmt.Errorf("error while querying db: %v", err)
+	}
+
+	res := &pb.InternalFetchWarehousesResponse{}
+	err = surrealdb.Unmarshal(queryRes, res)
+	if err != nil {
+		log.Println(err)
+		return &pb.InternalFetchWarehousesResponse{}, fmt.Errorf("error while unmarshaling data: %v", err)
+	}
+
+	return res, nil
+}
+
+func (h *Handler) DeleteAccount(data *pb.InternalDeleteAccRequest) (*emptypb.Empty, error) {
+	_, err := h.DB.Query("DELETE $userID->manages", map[string]string{
+		"userID": data.UserID,
+	})
+
+	if err != nil {
+		log.Println(err)
+		return &emptypb.Empty{}, fmt.Errorf("error while deleting user from warehouses: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+
 }

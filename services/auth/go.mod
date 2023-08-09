@@ -3,7 +3,7 @@ module github.com/CrabStash/crab-stash/auth
 go 1.18
 
 require (
-	github.com/CrabStash/crab-stash-protofiles v0.3.9
+	github.com/CrabStash/crab-stash-protofiles v0.3.11
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/satori/go.uuid v1.2.0

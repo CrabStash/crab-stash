@@ -13,7 +13,7 @@ import (
 func Create(ctx *gin.Context, c pb.WarehouseServiceClient) {
 	payload := pb.CreateRequest{}
 	if err := ctx.BindJSON(&payload); err != nil {
-		ctx.AbortWithError(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
@@ -24,15 +24,15 @@ func Create(ctx *gin.Context, c pb.WarehouseServiceClient) {
 
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	res, err := c.CreateWarehouse(context.Background(), &payload)
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(int(res.Status), res)
 		return
 	}
-	ctx.JSON(http.StatusCreated, gin.H{"warehouse_id": res.WarehouseID})
+	ctx.JSON(int(res.Status), res)
 }

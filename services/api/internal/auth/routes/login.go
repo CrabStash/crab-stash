@@ -15,37 +15,37 @@ func Login(ctx *gin.Context, c pb.AuthServiceClient) {
 	payload := pb.LoginRequest{}
 
 	if err := ctx.BindJSON(&payload); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	_, err := valid.ValidateStruct(&payload)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	res, err := c.Login(context.Background(), &payload)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(int(res.Status), res)
 		return
 	}
 
 	ref_exp, err := strconv.ParseInt(os.Getenv("REFRESH_EXP"), 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "response": "error parsing env"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "response": gin.H{"error": "error parsing env"}})
 		return
 	}
 
 	token_exp, err := strconv.ParseInt(os.Getenv("TOKEN_EXP"), 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "response": "error parsing env"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "response": gin.H{"error": "error parsing env"}})
 		return
 	}
 
-	ctx.SetCookie("refresh_token", res.Refresh, 24*60*60*int(ref_exp), "/", os.Getenv("DOMAIN"), false, true)
-	ctx.SetCookie("access_token", res.Token, 24*60*60*int(token_exp), "/", os.Getenv("DOMAIN"), false, true)
+	ctx.SetCookie("refresh_token", res.GetData().GetRefresh(), 24*60*60*int(ref_exp), "/", os.Getenv("DOMAIN"), false, true)
+	ctx.SetCookie("access_token", res.GetData().GetToken(), 24*60*60*int(token_exp), "/", os.Getenv("DOMAIN"), false, true)
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "response": res.Token})
+	ctx.JSON(int(res.Status), gin.H{"status": "ok", "response": gin.H{"data": gin.H{"token": res.GetData().GetToken()}}})
 }

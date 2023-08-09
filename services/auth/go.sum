@@ -6,6 +6,10 @@ github.com/CrabStash/crab-stash-protofiles v0.3.8 h1:ZUFMSMde8SiXRFweRBeyiGxKQUb
 github.com/CrabStash/crab-stash-protofiles v0.3.8/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/CrabStash/crab-stash-protofiles v0.3.9 h1:P1PsF8ptN9Qt1HSOKSozNRD+qadXTgnZkVKre3D9wJM=
 github.com/CrabStash/crab-stash-protofiles v0.3.9/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.10 h1:wyrW3gOcDTGrB7cpLAZsU0s2HjV/Pu5HYiiPR2VZmEI=
+github.com/CrabStash/crab-stash-protofiles v0.3.10/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.11 h1:Hp1NBXT8eK+ZEL6aivL65/qwsnmL3qjlyL0jWZDR5BI=
+github.com/CrabStash/crab-stash-protofiles v0.3.11/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/bsm/ginkgo/v2 v2.7.0 h1:ItPMPH90RbmZJt5GtkcNvIRuGEdwlBItdNVoyzaNQao=
 github.com/bsm/gomega v1.26.0 h1:LhQm+AFcgV2M0WyKroMASzAzCAJVpAxQXv4SaI9a69Y=
 github.com/cespare/xxhash/v2 v2.2.0 h1:DC2CZ1Ep5Y4k3ZQ899DldepgrayRUGE6BBZ/cd9Cj44=

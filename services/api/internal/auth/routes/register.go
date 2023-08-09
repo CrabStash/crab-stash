@@ -13,22 +13,22 @@ func Register(ctx *gin.Context, c pb.AuthServiceClient) {
 	payload := pb.RegisterRequest{}
 
 	if err := ctx.BindJSON(&payload); err != nil {
-		ctx.AbortWithError(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	_, err := valid.ValidateStruct(&payload)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	res, err := c.Register(context.Background(), &payload)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "response": err.Error()})
+		ctx.JSON(int(res.Status), res)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(int(res.Status), res)
 }

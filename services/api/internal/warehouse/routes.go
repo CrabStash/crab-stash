@@ -14,12 +14,14 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 
 	routes := r.Group("warehouse")
 	routes.Use(a.AuthRequired)
-	routes.POST("/users/add", svc.AddUser)
-	routes.POST("/create", svc.Create)
-	routes.DELETE("/delete/:id", svc.Delete)
-	routes.GET("/info/:id", svc.GetInfo)
-	routes.DELETE("/users/delete/:warehouseID/:userID", svc.RemoveUser)
-	routes.PUT("/update/:id", svc.Update)
+	{
+		routes.POST("/users/add", svc.AddUser)
+		routes.POST("/create", svc.Create)
+		routes.DELETE("/delete/:id", svc.Delete)
+		routes.GET("/info/:id", svc.GetInfo)
+		routes.DELETE("/users/delete/:warehouseID/:userID", svc.RemoveUser)
+		routes.PUT("/update/:id", svc.Update)
+	}
 
 	return svc
 }
