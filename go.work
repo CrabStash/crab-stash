@@ -3,4 +3,5 @@ go 1.18
 use (
 	services/api
 	services/auth
+	services/user
 )
