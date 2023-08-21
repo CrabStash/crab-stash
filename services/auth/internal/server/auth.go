@@ -26,13 +26,13 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 		return &pb.RegisterResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while querying db",
-		}, err
+		}, nil
 	}
 	if user.Email != "" {
 		return &pb.RegisterResponse{
 			Status:   http.StatusConflict,
 			Response: "user already exists",
-		}, err
+		}, nil
 	}
 
 	err = s.H.CreateUser(req)
@@ -41,7 +41,7 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 		return &pb.RegisterResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while creating user",
-		}, err
+		}, nil
 	}
 	return &pb.RegisterResponse{
 		Status:   http.StatusCreated,
@@ -58,7 +58,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 			Response: &pb.LoginResponse_Error{
 				Error: err.Error(),
 			},
-		}, err
+		}, nil
 	}
 
 	if user.Email != req.Email {
@@ -67,7 +67,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 			Response: &pb.LoginResponse_Error{
 				Error: "wrong email or password",
 			},
-		}, err
+		}, nil
 	}
 
 	ok := utils.CheckPasswordHash(req.Passwd, user.Passwd)
@@ -78,7 +78,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 			Response: &pb.LoginResponse_Error{
 				Error: "wrong email or password",
 			},
-		}, err
+		}, nil
 	}
 
 	token, tokenUUID, err := s.Jwt.SignJWT(user.Id, false)
@@ -89,7 +89,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 			Response: &pb.LoginResponse_Error{
 				Error: "error while signing jwt",
 			},
-		}, err
+		}, nil
 	}
 
 	refresh, refreshUUID, err := s.Jwt.SignJWT(user.Id, true)
@@ -100,7 +100,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 			Response: &pb.LoginResponse_Error{
 				Error: "error while signing jwt",
 			},
-		}, err
+		}, nil
 	}
 
 	now := time.Now()
@@ -113,7 +113,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 			Response: &pb.LoginResponse_Error{
 				Error: "error while storing token",
 			},
-		}, err
+		}, nil
 	}
 
 	errRefresh := s.R.Set(ctx, refreshUUID, user.Id, time.Unix(int64(s.Jwt.RefreshExp)*int64(time.Hour*24), 0).Sub(now)).Err()
@@ -124,7 +124,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 			Response: &pb.LoginResponse_Error{
 				Error: "error while storing token",
 			},
-		}, err
+		}, nil
 	}
 
 	return &pb.LoginResponse{
@@ -146,7 +146,7 @@ func (s *Server) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutR
 		return &pb.LogoutResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while validating JWT",
-		}, err
+		}, nil
 	}
 
 	_, refresh_uuid, err := s.Jwt.ValidateJWT(req.Refresh, true)
@@ -155,7 +155,7 @@ func (s *Server) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutR
 		return &pb.LogoutResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while validating jwt",
-		}, err
+		}, nil
 	}
 
 	_, err = s.R.Del(ctx, token_uuid, refresh_uuid).Result()
@@ -164,7 +164,7 @@ func (s *Server) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutR
 		return &pb.LogoutResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while validating JWT",
-		}, err
+		}, nil
 	}
 
 	return &pb.LogoutResponse{
@@ -183,7 +183,7 @@ func (s *Server) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.Refre
 			Response: &pb.RefreshResponse_Error{
 				Error: "error while validating jwt",
 			},
-		}, err
+		}, nil
 	}
 
 	userid, err := s.R.Get(ctx, refresh_uuid).Result()
@@ -194,7 +194,7 @@ func (s *Server) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.Refre
 			Response: &pb.RefreshResponse_Error{
 				Error: "error while storing jwt",
 			},
-		}, err
+		}, nil
 	}
 
 	user, err := s.H.GetUserByUUID(userid)
@@ -205,7 +205,7 @@ func (s *Server) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.Refre
 			Response: &pb.RefreshResponse_Error{
 				Error: "error while querying db",
 			},
-		}, err
+		}, nil
 	}
 
 	if user.Id == "" {
@@ -215,7 +215,7 @@ func (s *Server) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.Refre
 			Response: &pb.RefreshResponse_Error{
 				Error: "user does not longer exist",
 			},
-		}, err
+		}, nil
 	}
 
 	token, new_token_uuid, err := s.Jwt.SignJWT(user.Id, false)
@@ -226,7 +226,7 @@ func (s *Server) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.Refre
 			Response: &pb.RefreshResponse_Error{
 				Error: "error while signing jwt",
 			},
-		}, err
+		}, nil
 	}
 
 	now := time.Now()
@@ -238,7 +238,7 @@ func (s *Server) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.Refre
 			Response: &pb.RefreshResponse_Error{
 				Error: "error while storing jwt",
 			},
-		}, err
+		}, nil
 	}
 
 	return &pb.RefreshResponse{
@@ -261,7 +261,7 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 			Response: &pb.ValidateResponse_Error{
 				Error: "error while validating jwt",
 			},
-		}, err
+		}, nil
 	}
 
 	userid, err := s.R.Get(ctx, token_uuid).Result()
@@ -272,7 +272,7 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 			Response: &pb.ValidateResponse_Error{
 				Error: "error while storing jwt",
 			},
-		}, err
+		}, nil
 	}
 
 	user, err := s.H.GetUserByUUID(userid)
@@ -283,7 +283,7 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 			Response: &pb.ValidateResponse_Error{
 				Error: "error while querying db",
 			},
-		}, err
+		}, nil
 	}
 
 	if user.Id != userid {
@@ -293,7 +293,7 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 			Response: &pb.ValidateResponse_Error{
 				Error: "invalid",
 			},
-		}, err
+		}, nil
 	}
 
 	return &pb.ValidateResponse{

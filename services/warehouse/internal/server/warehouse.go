@@ -25,7 +25,7 @@ func (s *Server) CreateWarehouse(ctx context.Context, req *pb.CreateRequest) (*p
 			Response: &pb.CreateResponse_Error{
 				Error: err.Error(),
 			},
-		}, fmt.Errorf("error while creating warehouse: %v", err)
+		}, nil
 	}
 
 	return &pb.CreateResponse{
@@ -45,18 +45,18 @@ func (s *Server) GetInfo(ctx context.Context, req *pb.GetInfoRequest) (*pb.GetIn
 		return &pb.GetInfoResponse{
 			Status: http.StatusInternalServerError,
 			Response: &pb.GetInfoResponse_Error{
-				Error: "error while querying db",
+				Error: err.Error(),
 			},
-		}, fmt.Errorf("%v", err)
+		}, nil
 	}
 	if info.Data.Owner == "" {
 		log.Println(err)
 		return &pb.GetInfoResponse{
 			Status: http.StatusNotFound,
 			Response: &pb.GetInfoResponse_Error{
-				Error: "error while querying db",
+				Error: "warehouse does not exist",
 			},
-		}, fmt.Errorf("warehouse does not exist")
+		}, nil
 	}
 	return &pb.GetInfoResponse{
 		Status:   http.StatusOK,
@@ -71,7 +71,7 @@ func (s *Server) UpdateWarehouse(ctx context.Context, req *pb.UpdateRequest) (*p
 		return &pb.UpdateResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while creating warehouse",
-		}, fmt.Errorf("%v", err)
+		}, nil
 	}
 	return &pb.UpdateResponse{
 		Status:   http.StatusOK,
@@ -86,7 +86,7 @@ func (s *Server) AddUsersToWarehouse(ctx context.Context, req *pb.AddUsersReques
 		return &pb.AddUsersResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while adding user to warehouse",
-		}, fmt.Errorf("%v", err)
+		}, nil
 	}
 	return &pb.AddUsersResponse{
 		Status:   http.StatusOK,
@@ -101,7 +101,7 @@ func (s *Server) RemoveUserFromWarehouse(ctx context.Context, req *pb.RemoveUser
 		return &pb.RemoveUserResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while removing user from warehouse",
-		}, fmt.Errorf("%v", err)
+		}, nil
 	}
 	return &pb.RemoveUserResponse{
 		Status:   http.StatusOK,
@@ -116,7 +116,7 @@ func (s *Server) DeleteWarehouse(ctx context.Context, req *pb.DeleteRequest) (*p
 		return &pb.DeleteResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "error while deleting warehouse",
-		}, fmt.Errorf("%v", err)
+		}, nil
 	}
 	return &pb.DeleteResponse{
 		Status:   http.StatusOK,

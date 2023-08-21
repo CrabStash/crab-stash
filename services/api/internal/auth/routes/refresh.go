@@ -23,8 +23,8 @@ func Refresh(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
-	res, err := c.Refresh(context.Background(), &pb.RefreshRequest{Token: refresh_token})
-	if err != nil {
+	res, _ := c.Refresh(context.Background(), &pb.RefreshRequest{Token: refresh_token})
+	if res.Status >= 300 {
 		ctx.JSON(int(res.Status), res)
 		return
 	}

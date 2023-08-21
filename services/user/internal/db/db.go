@@ -27,8 +27,8 @@ func Init() Handler {
 		log.Fatalf("Failed to signin to db: %v\n", err)
 	}
 
-	if _, err = db.Use("users", "users"); err != nil {
-		log.Fatalf("Failed to use users/users: %v\n", err)
+	if _, err = db.Use("crabstash", "data"); err != nil {
+		log.Fatalf("Failed to use crabstash/data: %v\n", err.Error())
 	}
 	return Handler{db}
 }

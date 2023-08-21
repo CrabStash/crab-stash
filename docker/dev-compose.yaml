@@ -35,6 +35,11 @@ services:
       - 50054:50054
     expose:
       - "50054"
+    restart: always
+    environment:
+      SURREALDB_ADDR: "ws://surrealdb:8000/rpc"
+      SURREAL_USER: "root"
+      SURREAL_PASSWD: "root"
   
   warehouse:
     image: crabstash-warehouse

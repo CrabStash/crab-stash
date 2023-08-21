@@ -13,7 +13,7 @@ func main() {
 	r := gin.Default()
 	authSvc := *auth.RegisterRoutes(r)
 	_ = user.RegisterRoutes(r, &authSvc)
-	_ = warehouse.RegisterRoutes(r, &authSVC)
+	_ = warehouse.RegisterRoutes(r, &authSvc)
 
 	r.Run(":8080")
 }

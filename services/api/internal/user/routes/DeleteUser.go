@@ -22,11 +22,11 @@ func DeleteUser(ctx *gin.Context, c pb.UserServiceClient) {
 		return
 	}
 
-	res, err := c.DeleteUser(context.Background(), &payload)
+	res, _ := c.DeleteUser(context.Background(), &payload)
 
 	fmt.Println(res)
 	fmt.Println(err)
-	if err != nil {
+	if res.Status >= 300 {
 		fmt.Println("huj")
 		ctx.JSON(int(res.Status), res)
 		return

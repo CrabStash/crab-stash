@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -23,7 +22,7 @@ func (s *Server) MeInfo(ctx context.Context, req *pb.MeInfoRequest) (*pb.MeInfoR
 			Response: &pb.MeInfoResponse_Error{
 				Error: "could not get me info",
 			},
-		}, err
+		}, nil
 	}
 	return &pb.MeInfoResponse{
 		Status:   http.StatusOK,
@@ -38,7 +37,7 @@ func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoReque
 		return &pb.UpdateUserInfoResponse{
 			Status:   http.StatusInternalServerError,
 			Response: "could not update user info",
-		}, err
+		}, nil
 	}
 	return &pb.UpdateUserInfoResponse{
 		Status:   http.StatusOK,
@@ -54,7 +53,7 @@ func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*
 			Response: &pb.GetUserInfoResponse_Error{
 				Error: "could not get user info",
 			},
-		}, err
+		}, nil
 	}
 	return &pb.GetUserInfoResponse{
 		Status:   http.StatusOK,
@@ -70,7 +69,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 		return &pb.DeleteUserResponse{
 			Status:   http.StatusInternalServerError,
 			Response: err.Error(),
-		}, fmt.Errorf("%v", err)
+		}, nil
 	}
 	return &pb.DeleteUserResponse{
 		Status:   http.StatusOK,
@@ -81,7 +80,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 func (s *Server) InternalGetUserByEmailAuth(ctx context.Context, req *pb.InternalGetUserByEmailRequest) (*pb.InternalGetUserByEmailAuthResponse, error) {
 	usrInfo, err := s.H.DbInternalGetUserByEmail(req)
 	if err != nil {
-		return &pb.InternalGetUserByEmailAuthResponse{}, err
+		return &pb.InternalGetUserByEmailAuthResponse{}, nil
 	}
 	res := &pb.InternalGetUserByEmailAuthResponse{
 		Id:     usrInfo.Id,
@@ -95,7 +94,7 @@ func (s *Server) InternalGetUserByEmailAuth(ctx context.Context, req *pb.Interna
 func (s *Server) InternalGetUserByEmailWarehouse(ctx context.Context, req *pb.InternalGetUserByEmailRequest) (*pb.InternalGetUserByEmailWarehouseResponse, error) {
 	usrInfo, err := s.H.DbInternalGetUserByEmail(req)
 	if err != nil {
-		return &pb.InternalGetUserByEmailWarehouseResponse{}, err
+		return &pb.InternalGetUserByEmailWarehouseResponse{}, nil
 	}
 	res := &pb.InternalGetUserByEmailWarehouseResponse{
 		Id: usrInfo.Id,
@@ -107,7 +106,7 @@ func (s *Server) InternalGetUserByEmailWarehouse(ctx context.Context, req *pb.In
 func (s *Server) InternalGetUserByUUIDCheck(ctx context.Context, req *pb.InternalGetUserByUUIDCheck) (*pb.InternalGetUserByUUIDCheck, error) {
 	usrID, err := s.H.DbGetUserbyUUID(req)
 	if err != nil {
-		return &pb.InternalGetUserByUUIDCheck{}, err
+		return &pb.InternalGetUserByUUIDCheck{}, nil
 	}
 	return usrID, nil
 }

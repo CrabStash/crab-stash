@@ -24,8 +24,8 @@ func UpdateUserInfo(ctx *gin.Context, c pb.UserServiceClient) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
-	res, err := c.UpdateUserInfo(context.Background(), &payload)
-	if err != nil {
+	res, _ := c.UpdateUserInfo(context.Background(), &payload)
+	if res.Status >= 300 {
 		ctx.JSON(int(res.Status), res)
 		return
 	}

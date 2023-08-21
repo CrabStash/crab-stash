@@ -24,8 +24,8 @@ func Register(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
-	res, err := c.Register(context.Background(), &payload)
-	if err != nil {
+	res, _ := c.Register(context.Background(), &payload)
+	if res.Status >= 300 {
 		ctx.JSON(int(res.Status), res)
 		return
 	}

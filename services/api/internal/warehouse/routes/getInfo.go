@@ -22,9 +22,8 @@ func GetInfo(ctx *gin.Context, c pb.WarehouseServiceClient) {
 		return
 	}
 
-	res, err := c.GetInfo(context.Background(), &payload)
-	if err != nil {
-		log.Println(err)
+	res, _ := c.GetInfo(context.Background(), &payload)
+	if res.Status >= 300 {
 		ctx.JSON(int(res.Status), res)
 		return
 	}

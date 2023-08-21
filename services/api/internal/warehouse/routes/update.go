@@ -28,9 +28,8 @@ func Update(ctx *gin.Context, c pb.WarehouseServiceClient) {
 		return
 	}
 
-	res, err := c.UpdateWarehouse(context.Background(), &payload)
-	if err != nil {
-		log.Println(err)
+	res, _ := c.UpdateWarehouse(context.Background(), &payload)
+	if res.Status >= 300 {
 		ctx.JSON(int(res.Status), res)
 		return
 	}
