@@ -1,6 +1,6 @@
-module github.com/CrabStash/crab-stash/user
+module github.com/CrabStash/crab-stash/warehouse
 
-go 1.20
+go 1.18
 
 require (
 	github.com/CrabStash/crab-stash-protofiles v0.3.12-0.20230821135148-2ceb8ac2b99c

@@ -4,4 +4,5 @@ use (
 	services/api
 	services/auth
 	services/user
+	services/warehouse
 )

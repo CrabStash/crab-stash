@@ -2,7 +2,8 @@ package server
 
 import (
 	"context"
-	"fmt"
+	"log"
+	"net/http"
 	"time"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
@@ -21,62 +22,119 @@ type Server struct {
 func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	user, err := s.H.GetUserByEmail(req.Email)
 	if err != nil {
-		return &pb.RegisterResponse{}, err
+		log.Println(err)
+		return &pb.RegisterResponse{
+			Status:   http.StatusInternalServerError,
+			Response: "error while querying db",
+		}, err
 	}
 	if user.Email != "" {
-		return &pb.RegisterResponse{}, fmt.Errorf("user already exists")
+		return &pb.RegisterResponse{
+			Status:   http.StatusConflict,
+			Response: "user already exists",
+		}, err
 	}
 
 	err = s.H.CreateUser(req)
 	if err != nil {
-		return &pb.RegisterResponse{}, err
+		log.Println(err)
+		return &pb.RegisterResponse{
+			Status:   http.StatusInternalServerError,
+			Response: "error while creating user",
+		}, err
 	}
 	return &pb.RegisterResponse{
-		Status: "user created",
+		Status:   http.StatusCreated,
+		Response: "user created",
 	}, nil
 }
 
 func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	user, err := s.H.GetUserByEmail(req.Email)
 	if err != nil {
-		return &pb.LoginResponse{}, err
+		log.Println(err)
+		return &pb.LoginResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.LoginResponse_Error{
+				Error: err.Error(),
+			},
+		}, err
 	}
 
 	if user.Email != req.Email {
-		return &pb.LoginResponse{}, fmt.Errorf("wrong email or password")
+		return &pb.LoginResponse{
+			Status: http.StatusUnauthorized,
+			Response: &pb.LoginResponse_Error{
+				Error: "wrong email or password",
+			},
+		}, err
 	}
 
 	ok := utils.CheckPasswordHash(req.Passwd, user.Passwd)
 
 	if !ok {
-		return &pb.LoginResponse{}, fmt.Errorf("wrong email or password")
+		return &pb.LoginResponse{
+			Status: http.StatusUnauthorized,
+			Response: &pb.LoginResponse_Error{
+				Error: "wrong email or password",
+			},
+		}, err
 	}
 
 	token, tokenUUID, err := s.Jwt.SignJWT(user.Id, false)
 	if err != nil {
-		return &pb.LoginResponse{}, fmt.Errorf("%v", err.Error())
+		log.Println(err)
+		return &pb.LoginResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.LoginResponse_Error{
+				Error: "error while signing jwt",
+			},
+		}, err
 	}
 
 	refresh, refreshUUID, err := s.Jwt.SignJWT(user.Id, true)
 	if err != nil {
-		return &pb.LoginResponse{}, fmt.Errorf("%v", err.Error())
+		log.Println(err)
+		return &pb.LoginResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.LoginResponse_Error{
+				Error: "error while signing jwt",
+			},
+		}, err
 	}
 
 	now := time.Now()
 
 	errToken := s.R.Set(ctx, tokenUUID, user.Id, time.Unix(int64(s.Jwt.TokenExp)*int64(time.Hour*24), 0).Sub(now)).Err()
 	if errToken != nil {
-		return &pb.LoginResponse{}, fmt.Errorf("%v", err.Error())
+		log.Println(err)
+		return &pb.LoginResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.LoginResponse_Error{
+				Error: "error while storing token",
+			},
+		}, err
 	}
 
 	errRefresh := s.R.Set(ctx, refreshUUID, user.Id, time.Unix(int64(s.Jwt.RefreshExp)*int64(time.Hour*24), 0).Sub(now)).Err()
 	if errRefresh != nil {
-		return &pb.LoginResponse{}, fmt.Errorf("%v", err.Error())
+		log.Println(err)
+		return &pb.LoginResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.LoginResponse_Error{
+				Error: "error while storing token",
+			},
+		}, err
 	}
 
 	return &pb.LoginResponse{
-		Token:   token,
-		Refresh: refresh,
+		Status: http.StatusOK,
+		Response: &pb.LoginResponse_Data{
+			Data: &pb.LoginResponse_Response{
+				Token:   token,
+				Refresh: refresh,
+			},
+		},
 	}, nil
 
 }
@@ -84,21 +142,34 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 func (s *Server) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
 	_, token_uuid, err := s.Jwt.ValidateJWT(req.Token, false)
 	if err != nil {
-		return &pb.LogoutResponse{}, fmt.Errorf("error validating token: %v", err.Error())
+		log.Println(err)
+		return &pb.LogoutResponse{
+			Status:   http.StatusInternalServerError,
+			Response: "error while validating JWT",
+		}, err
 	}
 
 	_, refresh_uuid, err := s.Jwt.ValidateJWT(req.Refresh, true)
 	if err != nil {
-		return &pb.LogoutResponse{}, fmt.Errorf("error validating refresh: %v", err.Error())
+		log.Println(err)
+		return &pb.LogoutResponse{
+			Status:   http.StatusInternalServerError,
+			Response: "error while validating jwt",
+		}, err
 	}
 
 	_, err = s.R.Del(ctx, token_uuid, refresh_uuid).Result()
 	if err != nil {
-		return &pb.LogoutResponse{}, fmt.Errorf("error deleting tokens: %v", err.Error())
+		log.Println(err)
+		return &pb.LogoutResponse{
+			Status:   http.StatusInternalServerError,
+			Response: "error while validating JWT",
+		}, err
 	}
 
 	return &pb.LogoutResponse{
-		Status: "logout successful",
+		Status:   http.StatusOK,
+		Response: "logout successful",
 	}, nil
 
 }
@@ -106,36 +177,77 @@ func (s *Server) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutR
 func (s *Server) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.RefreshResponse, error) {
 	_, refresh_uuid, err := s.Jwt.ValidateJWT(req.Token, true)
 	if err != nil {
-		return &pb.RefreshResponse{}, fmt.Errorf("error validating token: %v", err.Error())
+		log.Println(err)
+		return &pb.RefreshResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.RefreshResponse_Error{
+				Error: "error while validating jwt",
+			},
+		}, err
 	}
 
 	userid, err := s.R.Get(ctx, refresh_uuid).Result()
 	if err != nil {
-		return &pb.RefreshResponse{}, fmt.Errorf("error while getting token: %v", err.Error())
+		log.Println(err)
+		return &pb.RefreshResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.RefreshResponse_Error{
+				Error: "error while storing jwt",
+			},
+		}, err
 	}
 
 	user, err := s.H.GetUserByUUID(userid)
 	if err != nil {
-		return &pb.RefreshResponse{}, fmt.Errorf("%v", err.Error())
+		log.Println(err)
+		return &pb.RefreshResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.RefreshResponse_Error{
+				Error: "error while querying db",
+			},
+		}, err
 	}
 
 	if user.Id == "" {
-		return &pb.RefreshResponse{}, fmt.Errorf("user belonging to this token does not exist", err.Error())
+		log.Println(err)
+		return &pb.RefreshResponse{
+			Status: http.StatusNotFound,
+			Response: &pb.RefreshResponse_Error{
+				Error: "user does not longer exist",
+			},
+		}, err
 	}
 
 	token, new_token_uuid, err := s.Jwt.SignJWT(user.Id, false)
 	if err != nil {
-		return &pb.RefreshResponse{}, fmt.Errorf("error while signing token: %v", err.Error())
+		log.Println(err)
+		return &pb.RefreshResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.RefreshResponse_Error{
+				Error: "error while signing jwt",
+			},
+		}, err
 	}
 
 	now := time.Now()
 	errToken := s.R.Set(ctx, new_token_uuid, user.Id, time.Unix(int64(s.Jwt.TokenExp)*int64(time.Hour*24), 0).Sub(now)).Err()
 	if errToken != nil {
-		return &pb.RefreshResponse{}, fmt.Errorf("%v", err.Error())
+		log.Println(err)
+		return &pb.RefreshResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.RefreshResponse_Error{
+				Error: "error while storing jwt",
+			},
+		}, err
 	}
 
 	return &pb.RefreshResponse{
-		Token: token,
+		Status: http.StatusOK,
+		Response: &pb.RefreshResponse_Data{
+			Data: &pb.RefreshResponse_Response{
+				Token: token,
+			},
+		},
 	}, nil
 
 }
@@ -143,24 +255,53 @@ func (s *Server) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.Refre
 func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.ValidateResponse, error) {
 	_, token_uuid, err := s.Jwt.ValidateJWT(req.Token, false)
 	if err != nil {
-		return &pb.ValidateResponse{}, fmt.Errorf("error validating token: %v", err.Error())
+		log.Println(err)
+		return &pb.ValidateResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.ValidateResponse_Error{
+				Error: "error while validating jwt",
+			},
+		}, err
 	}
 
 	userid, err := s.R.Get(ctx, token_uuid).Result()
 	if err != nil {
-		return &pb.ValidateResponse{}, fmt.Errorf("token is invalid or session has expired")
+		log.Println(err)
+		return &pb.ValidateResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.ValidateResponse_Error{
+				Error: "error while storing jwt",
+			},
+		}, err
 	}
 
 	user, err := s.H.GetUserByUUID(userid)
 	if err != nil {
-		return &pb.ValidateResponse{}, fmt.Errorf("%v", err.Error())
+		log.Println(err)
+		return &pb.ValidateResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.ValidateResponse_Error{
+				Error: "error while querying db",
+			},
+		}, err
 	}
 
 	if user.Id != userid {
-		return &pb.ValidateResponse{}, fmt.Errorf("user belonging to this token does longer exist")
+		log.Println(err)
+		return &pb.ValidateResponse{
+			Status: http.StatusUnauthorized,
+			Response: &pb.ValidateResponse_Error{
+				Error: "invalid",
+			},
+		}, err
 	}
 
 	return &pb.ValidateResponse{
-		Uuid: userid,
+		Status: http.StatusOK,
+		Response: &pb.ValidateResponse_Data{
+			Data: &pb.ValidateResponse_Response{
+				Uuid: userid,
+			},
+		},
 	}, nil
 }

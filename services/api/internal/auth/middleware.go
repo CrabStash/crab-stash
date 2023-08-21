@@ -18,17 +18,17 @@ func InitAuthMiddleware(svc *ServiceClient) AuthMiddlewareConfig {
 }
 
 func (c *AuthMiddlewareConfig) AuthRequired(ctx *gin.Context) {
-	auth := ctx.Request.Header.Get("authorization")
+	auth := ctx.Request.Header.Get("Authorization")
 
 	if auth == "" {
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": "wrong auth header"}})
 		return
 	}
 
 	token := strings.Split(auth, "Bearer ")
 
 	if len(token) < 2 {
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": "wrong auth header"}})
 		return
 	}
 
@@ -37,10 +37,10 @@ func (c *AuthMiddlewareConfig) AuthRequired(ctx *gin.Context) {
 	})
 
 	if err != nil {
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(int(uuid.Status), uuid)
 		return
 	}
 
-	ctx.Set("uuid", uuid.Uuid)
+	ctx.Set("uuid", uuid.GetData().GetUuid())
 	ctx.Next()
 }
