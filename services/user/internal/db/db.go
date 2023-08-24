@@ -54,7 +54,7 @@ func (h *Handler) GetMeInfo(data *pb.MeInfoRequest) (*pb.MeInfoResponse_Data, er
 
 func (h *Handler) DbUpdateUserInfo(usr *pb.UpdateUserInfoRequest) error {
 
-	_, err := h.DB.Update(usr.UserID, usr.Data)
+	_, err := h.DB.Change(usr.UserID, usr.Data)
 
 	if err != nil {
 		return fmt.Errorf("error while updating user info:%v", err)
@@ -70,11 +70,17 @@ func (h *Handler) DbGetUserInfo(data *pb.GetUserInfoRequest) (*pb.GetUserInfoRes
 		return &pb.GetUserInfoResponse_Data{}, fmt.Errorf("error while querying user info: %v", err)
 	}
 
+	_, ok := queryRes.(map[string]interface{})
+
+	if !ok {
+		return &pb.GetUserInfoResponse_Data{}, fmt.Errorf("user does not exist: %v", err)
+	}
+
 	res := &pb.GetUserInfoResponse_Data{
 		Data: &pb.GetUserInfoResponse_Response{},
 	}
 
-	_, err = surrealdb.UnmarshalRaw(queryRes, &res.Data)
+	err = surrealdb.Unmarshal(queryRes, &res.Data)
 
 	if err != nil {
 		return &pb.GetUserInfoResponse_Data{}, fmt.Errorf("error while unmarshaling data: %v", err)

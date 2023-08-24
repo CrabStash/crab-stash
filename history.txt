@@ -6,3 +6,5 @@ update users set owns=['hujowo'] where firstName='niga'
 select * from users;
 update users set owns=["masno"] where firstName="hui";
 select * from users;
+select * from user
+select * from users

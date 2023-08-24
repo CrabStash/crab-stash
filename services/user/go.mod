@@ -3,7 +3,7 @@ module github.com/CrabStash/crab-stash/user
 go 1.20
 
 require (
-	github.com/CrabStash/crab-stash-protofiles v0.3.12-0.20230821135148-2ceb8ac2b99c
+	github.com/CrabStash/crab-stash-protofiles v0.3.13
 	github.com/surrealdb/surrealdb.go v0.2.1
 	google.golang.org/grpc v1.56.2
 )

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -20,7 +21,7 @@ func (s *Server) MeInfo(ctx context.Context, req *pb.MeInfoRequest) (*pb.MeInfoR
 		return &pb.MeInfoResponse{
 			Status: http.StatusInternalServerError,
 			Response: &pb.MeInfoResponse_Error{
-				Error: "could not get me info",
+				Error: fmt.Sprintf("error while getting  me user info:%v", err),
 			},
 		}, nil
 	}
@@ -36,7 +37,7 @@ func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoReque
 	if err != nil {
 		return &pb.UpdateUserInfoResponse{
 			Status:   http.StatusInternalServerError,
-			Response: "could not update user info",
+			Response: fmt.Sprintf("error while updating user:%v", err),
 		}, nil
 	}
 	return &pb.UpdateUserInfoResponse{
@@ -51,7 +52,7 @@ func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*
 		return &pb.GetUserInfoResponse{
 			Status: http.StatusInternalServerError,
 			Response: &pb.GetUserInfoResponse_Error{
-				Error: "could not get user info",
+				Error: fmt.Sprintf("error while getting user info: %v", err),
 			},
 		}, nil
 	}
@@ -68,7 +69,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 		log.Println(err)
 		return &pb.DeleteUserResponse{
 			Status:   http.StatusInternalServerError,
-			Response: err.Error(),
+			Response: fmt.Sprintf("error while deleting user: %v", err),
 		}, nil
 	}
 	return &pb.DeleteUserResponse{
@@ -80,7 +81,10 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 func (s *Server) InternalGetUserByEmailAuth(ctx context.Context, req *pb.InternalGetUserByEmailRequest) (*pb.InternalGetUserByEmailAuthResponse, error) {
 	usrInfo, err := s.H.DbInternalGetUserByEmail(req)
 	if err != nil {
-		return &pb.InternalGetUserByEmailAuthResponse{}, nil
+		return &pb.InternalGetUserByEmailAuthResponse{
+			Status:   http.StatusInternalServerError,
+			Response: fmt.Sprintf("error while checking user email Auth:%v", err),
+		}, nil
 	}
 	res := &pb.InternalGetUserByEmailAuthResponse{
 		Id:     usrInfo.Id,
@@ -94,7 +98,9 @@ func (s *Server) InternalGetUserByEmailAuth(ctx context.Context, req *pb.Interna
 func (s *Server) InternalGetUserByEmailWarehouse(ctx context.Context, req *pb.InternalGetUserByEmailRequest) (*pb.InternalGetUserByEmailWarehouseResponse, error) {
 	usrInfo, err := s.H.DbInternalGetUserByEmail(req)
 	if err != nil {
-		return &pb.InternalGetUserByEmailWarehouseResponse{}, nil
+		return &pb.InternalGetUserByEmailWarehouseResponse{
+			Status:   http.StatusInternalServerError,
+			Response: fmt.Sprintf("error while checking user email Warehouse:%v", err)}, nil
 	}
 	res := &pb.InternalGetUserByEmailWarehouseResponse{
 		Id: usrInfo.Id,
@@ -106,7 +112,10 @@ func (s *Server) InternalGetUserByEmailWarehouse(ctx context.Context, req *pb.In
 func (s *Server) InternalGetUserByUUIDCheck(ctx context.Context, req *pb.InternalGetUserByUUIDCheck) (*pb.InternalGetUserByUUIDCheck, error) {
 	usrID, err := s.H.DbGetUserbyUUID(req)
 	if err != nil {
-		return &pb.InternalGetUserByUUIDCheck{}, nil
+		return &pb.InternalGetUserByUUIDCheck{
+			Status:   http.StatusInternalServerError,
+			Response: fmt.Sprintf("error while checking user id:%v", err),
+		}, nil
 	}
 	return usrID, nil
 }
