@@ -19,7 +19,7 @@ func Logout(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
-	auth := ctx.Request.Header.Get("authorization")
+	auth := ctx.Request.Header.Get("Authorization")
 
 	if auth == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
