@@ -15,27 +15,27 @@ func Logout(ctx *gin.Context, c pb.AuthServiceClient) {
 
 	refresh_token, err := ctx.Cookie("refresh_token")
 	if err != nil {
-		ctx.AbortWithError(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	auth := ctx.Request.Header.Get("authorization")
 
 	if auth == "" {
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	token := strings.Split(auth, "Bearer ")
 
 	if len(token) < 2 {
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
-	res, err := c.Logout(context.Background(), &pb.LogoutRequest{Token: token[1], Refresh: refresh_token})
-	if err != nil {
-		ctx.AbortWithError(http.StatusBadGateway, err)
+	res, _ := c.Logout(context.Background(), &pb.LogoutRequest{Token: token[1], Refresh: refresh_token})
+	if res.Status >= 300 {
+		ctx.JSON(int(res.Status), res)
 		return
 	}
 
@@ -44,5 +44,5 @@ func Logout(ctx *gin.Context, c pb.AuthServiceClient) {
 	ctx.SetCookie("refresh_token", "", int(exp.Unix()), "/", os.Getenv("DOMAIN"), false, true)
 	ctx.SetCookie("access_token", "", int(exp.Unix()), "/", os.Getenv("DOMAIN"), false, true)
 
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(int(res.Status), res)
 }

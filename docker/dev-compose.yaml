@@ -18,12 +18,43 @@ services:
       - "8080"
     depends_on:
       - auth
+      - warehouse
     restart: always
     environment:
       AUTH_MS_ADDR: "auth-service:50051"
+      USER_MS_ADDR: "user-service:50054"
+      WAREHOUSE_MS_ADDR: "warehouse-service:50052"
       REFRESH_EXP: "7"
       TOKEN_EXP: "2"
       DOMAIN: "localhost"
+
+  user:
+    image: crabstash-user
+    container_name: user-service
+    ports:
+      - 50054:50054
+    expose:
+      - "50054"
+    restart: always
+    environment:
+      SURREALDB_ADDR: "ws://surrealdb:8000/rpc"
+      SURREAL_USER: "root"
+      SURREAL_PASSWD: "root"
+  
+  warehouse:
+    image: crabstash-warehouse
+    container_name: warehouse-service
+    ports:
+      - 50052:50052
+    expose: 
+      - "50052"
+    depends_on:
+      - surrealdb
+    restart: always
+    environment:
+      SURREALDB_ADDR: "ws://surrealdb:8000/rpc"
+      SURREAL_USER: "root"
+      SURREAL_PASSWD: "root"
 
   auth:
     image: crabstash-auth

@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -15,26 +14,26 @@ func Refresh(ctx *gin.Context, c pb.AuthServiceClient) {
 
 	refresh_token, err := ctx.Cookie("refresh_token")
 	if err != nil {
-		ctx.AbortWithError(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	if refresh_token == "" {
-		ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("no refresh cookie present"))
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": "no refresh cookie present"}})
 		return
 	}
 
-	res, err := c.Refresh(context.Background(), &pb.RefreshRequest{Token: refresh_token})
-	if err != nil {
-		ctx.AbortWithError(http.StatusBadGateway, err)
+	res, _ := c.Refresh(context.Background(), &pb.RefreshRequest{Token: refresh_token})
+	if res.Status >= 300 {
+		ctx.JSON(int(res.Status), res)
 		return
 	}
 
 	token_exp, err := strconv.ParseInt(os.Getenv("TOKEN_EXP"), 10, 64)
 	if err != nil {
-		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("error parsing env"))
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "response": gin.H{"error": err.Error()}})
 	}
 
-	ctx.SetCookie("access_token", res.Token, 24*60*60*int(token_exp), "/", os.Getenv("DOMAIN"), false, true)
-	ctx.JSON(http.StatusOK, res)
+	ctx.SetCookie("access_token", res.GetData().GetToken(), 24*60*60*int(token_exp), "/", os.Getenv("DOMAIN"), false, true)
+	ctx.JSON(int(res.Status), res)
 }
