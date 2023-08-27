@@ -125,10 +125,9 @@ cloud.google.com/go/websecurityscanner v1.6.1/go.mod h1:Njgaw3rttgRHXzwCB8kgCYqv
 cloud.google.com/go/workflows v1.11.1/go.mod h1:Z+t10G1wF7h8LgdY/EmRcQY8ptBD/nvofaL6FqlET6g=
 github.com/CrabStash/crab-stash-protofiles v0.2.1 h1:c47phwGyu2g5Jbd7WR9vJ+G0qKoZruV9ExV+plgDLO4=
 github.com/CrabStash/crab-stash-protofiles v0.2.1/go.mod h1:uBsFXZIrxSldpShnQi6aGsrvaeMKCBHNz+urcQfd/EI=
-github.com/CrabStash/crab-stash-protofiles v0.3.13 h1:6RpaGkNbpI3m88gDOqpqZs7b9PoF3eAn8lzy63Cfs88=
-github.com/CrabStash/crab-stash-protofiles v0.3.13/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/golang/snappy v0.0.4/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
 github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+github.com/ugorji/go v1.2.7 h1:qYhyWUUd6WbiM+C6JZAUkIJt/1WrjzNHY9+KCIjVqTo=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 golang.org/x/mod v0.8.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=
 golang.org/x/mod v0.10.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=
