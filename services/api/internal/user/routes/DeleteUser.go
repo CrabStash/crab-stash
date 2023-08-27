@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/user/proto"
@@ -24,10 +23,7 @@ func DeleteUser(ctx *gin.Context, c pb.UserServiceClient) {
 
 	res, _ := c.DeleteUser(context.Background(), &payload)
 
-	fmt.Println(res)
-	fmt.Println(err)
 	if res.Status >= 300 {
-		fmt.Println("huj")
 		ctx.JSON(int(res.Status), res)
 		return
 	}

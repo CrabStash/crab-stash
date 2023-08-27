@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/user/proto"
@@ -21,7 +20,7 @@ func (s *Server) MeInfo(ctx context.Context, req *pb.MeInfoRequest) (*pb.MeInfoR
 		return &pb.MeInfoResponse{
 			Status: http.StatusInternalServerError,
 			Response: &pb.MeInfoResponse_Error{
-				Error: fmt.Sprintf("error while getting  me user info:%v", err),
+				Error: fmt.Sprintf("error while getting  me user info: %v", err),
 			},
 		}, nil
 	}
@@ -37,7 +36,7 @@ func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoReque
 	if err != nil {
 		return &pb.UpdateUserInfoResponse{
 			Status:   http.StatusInternalServerError,
-			Response: fmt.Sprintf("error while updating user:%v", err),
+			Response: fmt.Sprintf("error while updating user: %v", err),
 		}, nil
 	}
 	return &pb.UpdateUserInfoResponse{
@@ -66,7 +65,6 @@ func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*
 func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	err := s.H.DbDeleteUser(req)
 	if err != nil {
-		log.Println(err)
 		return &pb.DeleteUserResponse{
 			Status:   http.StatusInternalServerError,
 			Response: fmt.Sprintf("error while deleting user: %v", err),
@@ -83,7 +81,7 @@ func (s *Server) InternalGetUserByEmailAuth(ctx context.Context, req *pb.Interna
 	if err != nil {
 		return &pb.InternalGetUserByEmailAuthResponse{
 			Status:   http.StatusInternalServerError,
-			Response: fmt.Sprintf("error while checking user email Auth:%v", err),
+			Response: fmt.Sprintf("error while checking user email Auth: %v", err),
 		}, nil
 	}
 	res := &pb.InternalGetUserByEmailAuthResponse{
@@ -100,7 +98,7 @@ func (s *Server) InternalGetUserByEmailWarehouse(ctx context.Context, req *pb.In
 	if err != nil {
 		return &pb.InternalGetUserByEmailWarehouseResponse{
 			Status:   http.StatusInternalServerError,
-			Response: fmt.Sprintf("error while checking user email Warehouse:%v", err)}, nil
+			Response: fmt.Sprintf("error while checking user email Warehouse: %v", err)}, nil
 	}
 	res := &pb.InternalGetUserByEmailWarehouseResponse{
 		Id: usrInfo.Id,
@@ -114,7 +112,7 @@ func (s *Server) InternalGetUserByUUIDCheck(ctx context.Context, req *pb.Interna
 	if err != nil {
 		return &pb.InternalGetUserByUUIDCheck{
 			Status:   http.StatusInternalServerError,
-			Response: fmt.Sprintf("error while checking user id:%v", err),
+			Response: fmt.Sprintf("error while checking user id: %v", err),
 		}, nil
 	}
 	return usrID, nil

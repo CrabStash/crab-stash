@@ -57,7 +57,7 @@ func (h *Handler) DbUpdateUserInfo(usr *pb.UpdateUserInfoRequest) error {
 	_, err := h.DB.Change(usr.UserID, usr.Data)
 
 	if err != nil {
-		return fmt.Errorf("error while updating user info:%v", err)
+		return fmt.Errorf("error while updating user info: %v", err)
 	}
 
 	return nil
@@ -96,10 +96,9 @@ func (h *Handler) DbDeleteUser(usr *pb.DeleteUserRequest) error {
 	isOwner := Ownership{}
 	err = surrealdb.Unmarshal(queryRes, &isOwner)
 	if err != nil {
-		return fmt.Errorf("error while unmarshaling data:%v", err)
+		return fmt.Errorf("error while unmarshaling data: %v", err)
 	}
-	fmt.Println(isOwner.Owns)
-	fmt.Println(len(isOwner.Owns))
+
 	if len(isOwner.Owns) != 0 {
 		return fmt.Errorf("cannot delete user if he is an owner")
 	}
@@ -115,7 +114,6 @@ func (h *Handler) DbInternalGetUserByEmail(usr *pb.InternalGetUserByEmailRequest
 	queryRes, err := h.DB.Select(usr.Email)
 
 	if err != nil {
-		log.Println(err)
 		return UserCrucial{}, fmt.Errorf("error while querying user: %v", err)
 	}
 	res := UserCrucial{}
@@ -130,7 +128,6 @@ func (h *Handler) DbInternalGetUserByEmail(usr *pb.InternalGetUserByEmailRequest
 func (h *Handler) DbGetUserbyUUID(usr *pb.InternalGetUserByUUIDCheck) (*pb.InternalGetUserByUUIDCheck, error) {
 	queryRes, err := h.DB.Select(usr.Id)
 	if err != nil {
-		log.Println(err)
 		return &pb.InternalGetUserByUUIDCheck{}, fmt.Errorf("error while querying id: %v ", err)
 	}
 	userUnmarshal := &pb.InternalGetUserByUUIDCheck{}
