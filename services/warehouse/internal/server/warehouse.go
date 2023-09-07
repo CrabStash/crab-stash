@@ -141,3 +141,21 @@ func (s *Server) InternalDeleteAcc(ctx context.Context, req *pb.InternalDeleteAc
 	}
 	return &emptypb.Empty{}, nil
 }
+
+func (s *Server) InternalFetchWarehouseRole(ctx context.Context, req *pb.InternalFetchWarehouseRoleRequest) (*pb.InternalFetchWarehouseRoleResponse, error) {
+	role, err := s.H.CheckRole(req)
+	if err != nil {
+		return &pb.InternalFetchWarehouseRoleResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.InternalFetchWarehouseRoleResponse_Error{
+				Error: fmt.Sprintf("error while checking roles: %v", err.Error()),
+			},
+		}, nil
+	}
+	return &pb.InternalFetchWarehouseRoleResponse{
+		Status: http.StatusOK,
+		Response: &pb.InternalFetchWarehouseRoleResponse_Data{
+			Data: role,
+		},
+	}, nil
+}

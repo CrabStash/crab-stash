@@ -61,9 +61,8 @@ DEFINE FIELD parents.* ON TABLE categories type record(categories);
 
 DEFINE FIELD in ON TABLE manages TYPE record(user);
 DEFINE FIELD out ON TABLE manages TYPE record(warehouse);
-DEFINE FIELD roles ON TABLE manages TYPE array
-  ASSERT $value != NULL AND $value != NONE AND array::distinct($value) == $value;
-DEFINE FIELD roles.* ON TABLE manages TYPE string;
+DEFINE FIELD role ON TABLE manages TYPE number
+  ASSERT $value != NULL AND $value != NONE;
 
 DEFINE INDEX unique_relationships ON TABLE manages COLUMNS in, out UNIQUE;
 

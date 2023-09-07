@@ -47,5 +47,5 @@ func Login(ctx *gin.Context, c pb.AuthServiceClient) {
 	ctx.SetCookie("refresh_token", res.GetData().GetRefresh(), 24*60*60*int(ref_exp), "/", os.Getenv("DOMAIN"), false, true)
 	ctx.SetCookie("access_token", res.GetData().GetToken(), 24*60*60*int(token_exp), "/", os.Getenv("DOMAIN"), false, true)
 
-	ctx.JSON(int(res.Status), gin.H{"status": "ok", "response": gin.H{"data": gin.H{"token": res.GetData().GetToken()}}})
+	ctx.JSON(int(res.Status), gin.H{"status": http.StatusOK, "response": gin.H{"data": gin.H{"token": res.GetData().GetToken()}}})
 }

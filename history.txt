@@ -8,3 +8,14 @@ update users set owns=["masno"] where firstName="hui";
 select * from users;
 select * from user
 select * from users
+INFO FOR DB;
+SELECT * FROM user;
+select * from user;
+INFO FOR DB;
+SELECT * FROM MANAGES;
+select * from manages;
+select * from user;
+select * from manages;
+select * from user;
+select * from manages;
+select * from user;

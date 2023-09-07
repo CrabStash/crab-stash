@@ -12,7 +12,9 @@ import (
 
 func AddUser(ctx *gin.Context, c pb.WarehouseServiceClient) {
 	payload := pb.AddUsersRequest{}
+
 	if err := ctx.BindJSON(&payload); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
