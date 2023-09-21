@@ -7,7 +7,9 @@ services:
       - 8000:8000
     expose:
       - "8000"
-    command: start --user root --pass root
+    volumes:
+      - ../db/data/surrealData.db:/surrealData.db
+    command: start --user root --pass root file://surrealData.db
 
   api:
     image: crabstash-api
