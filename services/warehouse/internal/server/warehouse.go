@@ -124,6 +124,15 @@ func (s *Server) DeleteWarehouse(ctx context.Context, req *pb.DeleteRequest) (*p
 	}, nil
 }
 
+func (s *Server) ChangeRole(ctx context.Context, req *pb.ChangeRoleRequest) (*pb.ChangeRoleResponse, error) {
+	res, err := s.H.ChangeRole(req)
+	if err != nil {
+		res.Response = err.Error()
+		return res, nil
+	}
+	return res, nil
+}
+
 func (s *Server) InternalFetchWarehouses(ctx context.Context, req *pb.InternalFetchWarehousesRequest) (*pb.InternalFetchWarehousesResponse, error) {
 	warehouses, err := s.H.FetchWarehouses(req)
 	if err != nil {
@@ -140,4 +149,22 @@ func (s *Server) InternalDeleteAcc(ctx context.Context, req *pb.InternalDeleteAc
 		return &emptypb.Empty{}, fmt.Errorf("%v", err)
 	}
 	return &emptypb.Empty{}, nil
+}
+
+func (s *Server) InternalFetchWarehouseRole(ctx context.Context, req *pb.InternalFetchWarehouseRoleRequest) (*pb.InternalFetchWarehouseRoleResponse, error) {
+	role, err := s.H.CheckRole(req)
+	if err != nil {
+		return &pb.InternalFetchWarehouseRoleResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.InternalFetchWarehouseRoleResponse_Error{
+				Error: fmt.Sprintf("error while checking roles: %v", err.Error()),
+			},
+		}, nil
+	}
+	return &pb.InternalFetchWarehouseRoleResponse{
+		Status: http.StatusOK,
+		Response: &pb.InternalFetchWarehouseRoleResponse_Data{
+			Data: role,
+		},
+	}, nil
 }

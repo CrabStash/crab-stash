@@ -1,13 +1,15 @@
 version: "3.3"
 services: 
   surrealdb:
-    image: surrealdb/surrealdb:latest
+    image: surrealdb/surrealdb:1.0.0-beta.9-20230402
     container_name: surrealdb
     ports:
       - 8000:8000
     expose:
       - "8000"
-    command: start --user root --pass root
+    volumes:
+      - ../db/data/surrealData.db:/surrealData.db
+    command: start --user root --pass root file://surrealData.db
 
   api:
     image: crabstash-api
@@ -19,6 +21,7 @@ services:
     depends_on:
       - auth
       - warehouse
+      - user
     restart: always
     environment:
       AUTH_MS_ADDR: "auth-service:50051"
@@ -36,6 +39,8 @@ services:
     expose:
       - "50054"
     restart: always
+    depends_on:
+      - surrealdb
     environment:
       SURREALDB_ADDR: "ws://surrealdb:8000/rpc"
       SURREAL_USER: "root"

@@ -21,6 +21,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 		routes.GET("/info/:id", svc.GetInfo)
 		routes.DELETE("/users/delete/:warehouseID/:userID", svc.RemoveUser)
 		routes.PUT("/update/:id", svc.Update)
+		routes.PUT("/users/role", svc.ChangeRole)
 	}
 
 	return svc
@@ -31,21 +32,56 @@ func (svc *ServiceClient) Create(ctx *gin.Context) {
 }
 
 func (svc *ServiceClient) GetInfo(ctx *gin.Context) {
+	code, err := PermissionHandler(0, svc.Client, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
 	routes.GetInfo(ctx, svc.Client)
 }
 
 func (svc *ServiceClient) Update(ctx *gin.Context) {
+	code, err := PermissionHandler(3, svc.Client, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
 	routes.Update(ctx, svc.Client)
 }
 
 func (svc *ServiceClient) AddUser(ctx *gin.Context) {
+	code, err := PermissionHandler(2, svc.Client, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+
 	routes.AddUser(ctx, svc.Client)
 }
 
+func (svc *ServiceClient) ChangeRole(ctx *gin.Context) {
+	code, err := PermissionHandler(2, svc.Client, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+	routes.ChangeRole(ctx, svc.Client)
+}
+
 func (svc *ServiceClient) RemoveUser(ctx *gin.Context) {
+	code, err := PermissionHandler(2, svc.Client, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
 	routes.RemoveUser(ctx, svc.Client)
 }
 
 func (svc *ServiceClient) Delete(ctx *gin.Context) {
+	code, err := PermissionHandler(4, svc.Client, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
 	routes.Delete(ctx, svc.Client)
 }

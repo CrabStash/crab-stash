@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -22,7 +21,7 @@ func Init() Handler {
 		log.Fatalf("%v", err.Error())
 	}
 
-	fmt.Println("✅ Redis connected!")
+	log.Println("✅ Redis connected!")
 
 	return Handler{rc}
 }
