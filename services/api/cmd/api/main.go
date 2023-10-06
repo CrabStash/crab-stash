@@ -13,8 +13,8 @@ func main() {
 	valid.SetFieldsRequiredByDefault(true)
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowAllOrigins:  true,
-		AllowHeaders:     []string{"Origin, Authorization"},
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
