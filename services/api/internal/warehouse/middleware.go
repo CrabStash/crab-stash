@@ -22,9 +22,7 @@ func PermissionHandler(permissionLevel int, c pb.WarehouseServiceClient, ctx *gi
 		return 200, nil
 	}
 
-	payload := pb.InternalFetchWarehouseRoleRequest{
-		UserID: uuid.(string),
-	}
+	payload := pb.InternalFetchWarehouseRoleRequest{}
 	byteBody, err := ioutil.ReadAll(ctx.Request.Body)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("error while reading request body")
@@ -36,6 +34,9 @@ func PermissionHandler(permissionLevel int, c pb.WarehouseServiceClient, ctx *gi
 	} else if err := json.Unmarshal(byteBody, &payload); err != nil {
 		return http.StatusBadRequest, fmt.Errorf("%v", err.Error())
 	}
+
+	payload.UserID = uuid.(string)
+
 	_, err = valid.ValidateStruct(&payload)
 	if err != nil {
 		return http.StatusBadRequest, fmt.Errorf("%v", err.Error())

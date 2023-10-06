@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/warehouse/proto"
@@ -185,6 +186,43 @@ func (h *Handler) DeleteAccount(data *pb.InternalDeleteAccRequest) (*emptypb.Emp
 
 }
 
+func (h *Handler) ChangeRole(data *pb.ChangeRoleRequest) (*pb.ChangeRoleResponse, error) {
+	role, err := h.CheckRole(&pb.InternalFetchWarehouseRoleRequest{
+		WarehouseID: data.WarehouseID,
+		UserID:      data.Uuid,
+	})
+
+	if err != nil {
+		log.Println(err)
+		return &pb.ChangeRoleResponse{
+			Status: http.StatusInternalServerError,
+		}, fmt.Errorf("error while checking user role")
+	}
+
+	if data.NewRole >= role.Role {
+		return &pb.ChangeRoleResponse{
+			Status: http.StatusUnauthorized,
+		}, fmt.Errorf("user's role cannot be equal or higher than your current role")
+	}
+
+	_, err = h.DB.Query("UPDATE manages SET role = $newRole WHERE in = $userID AND out = $warehouseID", map[string]interface{}{
+		"newRole":     data.NewRole,
+		"userID":      data.TargetUserID,
+		"warehouseID": data.WarehouseID,
+	})
+
+	if err != nil {
+		return &pb.ChangeRoleResponse{
+			Status: http.StatusInternalServerError,
+		}, fmt.Errorf("error while updating users role: %v", err.Error())
+	}
+
+	return &pb.ChangeRoleResponse{
+		Status:   http.StatusOK,
+		Response: "updated user role",
+	}, nil
+}
+
 func (h *Handler) CheckRole(data *pb.InternalFetchWarehouseRoleRequest) (*pb.InternalFetchWarehouseRoleResponse_Response, error) {
 	queryRes, err := h.DB.Query("SELECT role FROM manages WHERE in = $userID AND out = $warehouseID LIMIT 1", map[string]string{
 		"userID":      data.UserID,
@@ -202,6 +240,10 @@ func (h *Handler) CheckRole(data *pb.InternalFetchWarehouseRoleRequest) (*pb.Int
 	if err != nil {
 		log.Println(err)
 		return &pb.InternalFetchWarehouseRoleResponse_Response{}, fmt.Errorf("error while unmarshaling data: %v", err)
+	}
+
+	if len(res[0].Result) == 0 {
+		return &pb.InternalFetchWarehouseRoleResponse_Response{}, fmt.Errorf("user does not belong to requested warehouse")
 	}
 
 	return &pb.InternalFetchWarehouseRoleResponse_Response{

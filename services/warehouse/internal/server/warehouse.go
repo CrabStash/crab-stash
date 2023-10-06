@@ -124,6 +124,15 @@ func (s *Server) DeleteWarehouse(ctx context.Context, req *pb.DeleteRequest) (*p
 	}, nil
 }
 
+func (s *Server) ChangeRole(ctx context.Context, req *pb.ChangeRoleRequest) (*pb.ChangeRoleResponse, error) {
+	res, err := s.H.ChangeRole(req)
+	if err != nil {
+		res.Response = err.Error()
+		return res, nil
+	}
+	return res, nil
+}
+
 func (s *Server) InternalFetchWarehouses(ctx context.Context, req *pb.InternalFetchWarehousesRequest) (*pb.InternalFetchWarehousesResponse, error) {
 	warehouses, err := s.H.FetchWarehouses(req)
 	if err != nil {
