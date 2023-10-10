@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/warehouse/proto"
@@ -130,6 +131,39 @@ func (s *Server) ChangeRole(ctx context.Context, req *pb.ChangeRoleRequest) (*pb
 		res.Response = err.Error()
 		return res, nil
 	}
+	return res, nil
+}
+func (s *Server) ListUsers(ctx context.Context, req *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
+	count, err := s.H.CountUsers(req)
+
+	if err != nil {
+		return &pb.ListUsersResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.ListUsersResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
+	}
+
+	pages := math.Ceil(float64(count) / float64(req.Limit))
+
+	users, err := s.H.ListUsers(req, int(pages))
+
+	if err != nil {
+		return &pb.ListUsersResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.ListUsersResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
+	}
+	res := &pb.ListUsersResponse{
+		Status: http.StatusOK,
+		Response: &pb.ListUsersResponse_Data{
+			Data: users,
+		},
+	}
+
 	return res, nil
 }
 

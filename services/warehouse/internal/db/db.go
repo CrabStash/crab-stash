@@ -249,4 +249,60 @@ func (h *Handler) CheckRole(data *pb.InternalFetchWarehouseRoleRequest) (*pb.Int
 	return &pb.InternalFetchWarehouseRoleResponse_Response{
 		Role: pb.Roles(res[0].Result[0]["role"].(float64)),
 	}, nil
+
+}
+
+func (h *Handler) ListUsers(data *pb.ListUsersRequest, pageCount int) (*pb.ListUsersResponse_Response, error) {
+	var page int32
+
+	if data.Page > int32(pageCount) {
+		page = int32(pageCount)
+	} else {
+		page = int32(data.Page)
+	}
+
+	queryRes, err := h.DB.Query("SELECT in.* as user, role FROM manages WHERE out = $warehouseID ORDER BY role DESC LIMIT $limit START $page", map[string]interface{}{
+		"warehouseID": data.WarehouseID,
+		"limit":       data.Limit,
+		"page":        data.Limit * page,
+	})
+	if err != nil {
+		log.Println(err)
+		return &pb.ListUsersResponse_Response{}, fmt.Errorf("error while querying db: %v", err.Error())
+	}
+	res := &pb.ListUsersResponse_Response{}
+
+	err = surrealdb.Unmarshal(queryRes, res.List)
+
+	if err != nil {
+		log.Println(err)
+		return &pb.ListUsersResponse_Response{}, fmt.Errorf("error while unmarshaling data: %v", err)
+	}
+
+	res.Pagination.Limit = data.Limit
+	res.Pagination.Page = data.Page
+	res.Pagination.Total = int32(pageCount)
+
+	return res, nil
+
+}
+
+func (h *Handler) CountUsers(data *pb.ListUsersRequest) (int, error) {
+	queryRes, err := h.DB.Query("SELECT count(*) as userCount FROM manages WHERE out = $warehouseID", map[string]string{
+		"warehouseID": data.WarehouseID,
+	})
+	if err != nil {
+		log.Println(err)
+		return 0, fmt.Errorf("error while counting users: %v", err.Error())
+	}
+	res := userCount{}
+
+	err = surrealdb.Unmarshal(queryRes, res)
+
+	if err != nil {
+		log.Println(err)
+		return 0, fmt.Errorf("error while unmarshaling data:%v", err)
+	}
+	return res.Count, nil
+
 }

@@ -22,6 +22,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 		routes.DELETE("/users/delete/:warehouseID/:userID", svc.RemoveUser)
 		routes.PUT("/update/:id", svc.Update)
 		routes.PUT("/users/role", svc.ChangeRole)
+		routes.GET("/users/:id", svc.ListUsers)
 	}
 
 	return svc
@@ -84,4 +85,14 @@ func (svc *ServiceClient) Delete(ctx *gin.Context) {
 		return
 	}
 	routes.Delete(ctx, svc.Client)
+
+}
+
+func (svc *ServiceClient) ListUsers(ctx *gin.Context) {
+	code, err := PermissionHandler(0, svc.Client, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+	routes.ListUsers(ctx, svc.Client)
 }
