@@ -8,19 +8,19 @@ DEFINE TABLE entities SCHEMAFULL;
 DEFINE TABLE categories SCHEMAFULL;
 
 DEFINE FIELD email ON TABLE user TYPE string
-  ASSERT $value != NULL AND $value != NONE AND is::email($value);
+  ASSERT $value != NULL AND $value != NONE AND string::is::email($value);
 DEFINE FIELD firstName ON TABLE user TYPE string
-  ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0 AND is::alpha($value);
+  ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
 DEFINE FIELD lastName ON TABLE user TYPE string
-  ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0 AND is::alpha($value);
+  ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
 DEFINE FIELD passwd ON TABLE user TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
 DEFINE FIELD avatar ON TABLE user TYPE string
-  VALUE $value OR NULL
-  ASSERT (is::url($value) OR $value == NULL);
-DEFINE FIELD owns ON TABLE user TYPE array
-  VALUE $value OR []
-  ASSERT array::distinct($value) == $value OR $value == NULL;
+  DEFAULT "https://google.com"
+  ASSERT string::is::url($value);
+DEFINE FIELD owns ON TABLE user TYPE option<array>
+  DEFAULT []
+  ASSERT array::distinct($value) == $value;
 DEFINE FIELD owns.* ON TABLE user TYPE record(warehouse);
 
 DEFINE INDEX userEmailIndex ON TABLE user COLUMNS email UNIQUE;
@@ -29,9 +29,8 @@ DEFINE FIELD name ON TABLE warehouse TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
 DEFINE FIELD desc ON TABLE warehouse TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
-DEFINE FIELD logo ON TABLE warehouse TYPE string
-  VALUE $value OR NULL
-  ASSERT (is::url($value) OR $value == NULL);
+DEFINE FIELD logo ON TABLE warehouse TYPE option<string>
+  ASSERT string::is::url($value);
 DEFINE FIELD owner ON TABLE warehouse TYPE record(user)
   ASSERT $value != NULL AND $value != NONE;
 DEFINE FIELD isPhysical ON TABLE warehouse TYPE bool

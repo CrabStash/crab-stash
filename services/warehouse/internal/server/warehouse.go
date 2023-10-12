@@ -133,6 +133,7 @@ func (s *Server) ChangeRole(ctx context.Context, req *pb.ChangeRoleRequest) (*pb
 	}
 	return res, nil
 }
+
 func (s *Server) ListUsers(ctx context.Context, req *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	count, err := s.H.CountUsers(req)
 

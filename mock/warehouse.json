@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Masny magazyn",
+    "desc": "najmaśniejszy magazyn po tej stronie wisły",
+    "isPhysical": false,
+    "capacity": -1,
+    "logo": "https://google.com"
+  }
+]

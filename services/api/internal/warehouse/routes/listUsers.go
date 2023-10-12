@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -30,11 +29,14 @@ func ListUsers(ctx *gin.Context, c pb.WarehouseServiceClient) {
 		return
 	}
 
+	if page < 1 {
+		page = 1
+	}
+
 	payload.Limit = int32(limit)
 	payload.Page = int32(page)
-	payload.WarehouseID = strings.Split(ctx.Param("id"), "/")[0]
-	fmt.Println(strings.Split(ctx.Param("id"), "/")[0])
-	fmt.Println(ctx.Param("id"))
+	payload.WarehouseID = strings.Split(ctx.Param("warehouseID"), "/")[0]
+
 	_, err = valid.ValidateStruct(&payload)
 	if err != nil {
 		log.Println(err)

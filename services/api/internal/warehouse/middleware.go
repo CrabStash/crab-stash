@@ -18,6 +18,7 @@ func PermissionHandler(permissionLevel int, c pb.WarehouseServiceClient, ctx *gi
 	UserID := strings.Split(ctx.Param("userID"), "/")[0]
 	WarehouseID := strings.Split(ctx.Param("warehouseID"), "/")[0]
 	uuid, _ := ctx.Get("uuid")
+
 	if UserID != "" && WarehouseID != "" && UserID == WarehouseID && uuid.(string) == UserID {
 		return 200, nil
 	}
@@ -29,7 +30,7 @@ func PermissionHandler(permissionLevel int, c pb.WarehouseServiceClient, ctx *gi
 	}
 	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(byteBody))
 
-	if UserID != "" && WarehouseID != "" {
+	if WarehouseID != "" {
 		payload.WarehouseID = WarehouseID
 	} else if err := json.Unmarshal(byteBody, &payload); err != nil {
 		return http.StatusBadRequest, fmt.Errorf("%v", err.Error())
