@@ -13,7 +13,11 @@ import (
 
 func GetInfo(ctx *gin.Context, c pb.WarehouseServiceClient) {
 	payload := pb.GetInfoRequest{}
-	payload.WarehouseID = strings.Split(ctx.Param("id"), "/")[0]
+	payload.WarehouseID = strings.Split(ctx.Param("warehouseID"), "/")[0]
+
+	uuid, _ := ctx.Get("uuid")
+
+	payload.UserID = uuid.(string)
 	_, err := valid.ValidateStruct(&payload)
 
 	if err != nil {

@@ -12,7 +12,7 @@ import (
 )
 
 func Delete(ctx *gin.Context, c pb.WarehouseServiceClient) {
-	id := strings.Split(ctx.Param("id"), "/")[0]
+	id := strings.Split(ctx.Param("warehouseID"), "/")[0]
 
 	payload := pb.DeleteRequest{}
 	payload.WarehouseID = id

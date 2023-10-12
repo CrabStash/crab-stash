@@ -90,23 +90,26 @@ func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 }
 
 func (h *Handler) GetInfo(data *pb.GetInfoRequest) (*pb.GetInfoResponse_Data, error) {
-	queryRes, err := h.DB.Select(data.WarehouseID)
+	queryRes, err := h.DB.Query("SELECT *, (SELECT role FROM ONLY manages WHERE out = $warehouseID AND in = $userID).role as role FROM $warehouseID", map[string]string{
+		"warehouseID": data.WarehouseID,
+		"userID":      data.UserID,
+	})
 
 	if err != nil {
 		log.Println(err)
 		return &pb.GetInfoResponse_Data{}, fmt.Errorf("error while querying db: %v", err)
 	}
 
-	res := &pb.GetInfoResponse_Data{
-		Data: &pb.GetInfoResponse_Response{},
-	}
-	err = surrealdb.Unmarshal(queryRes, res.Data)
+	res, err := surrealdb.SmartUnmarshal[[]pb.GetInfoResponse_Response](queryRes, nil)
+
 	if err != nil {
 		log.Println(err)
 		return &pb.GetInfoResponse_Data{}, fmt.Errorf("error while unmarshalling data: %v", err)
 	}
 
-	return res, nil
+	return &pb.GetInfoResponse_Data{
+		Data: &res[0],
+	}, nil
 }
 
 func (h *Handler) UpdateWarehouse(data *pb.UpdateRequest) error {
@@ -163,7 +166,7 @@ func (h *Handler) FetchWarehouses(data *pb.InternalFetchWarehousesRequest) (*pb.
 	}
 
 	res := &pb.InternalFetchWarehousesResponse{}
-	err = surrealdb.Unmarshal(queryRes, res)
+	err = surrealdb.Unmarshal(queryRes, &res)
 	if err != nil {
 		log.Println(err)
 		return &pb.InternalFetchWarehousesResponse{}, fmt.Errorf("error while unmarshaling data: %v", err)
@@ -249,4 +252,69 @@ func (h *Handler) CheckRole(data *pb.InternalFetchWarehouseRoleRequest) (*pb.Int
 	return &pb.InternalFetchWarehouseRoleResponse_Response{
 		Role: pb.Roles(res[0].Result[0]["role"].(float64)),
 	}, nil
+
+}
+
+func (h *Handler) ListUsers(data *pb.ListUsersRequest, pageCount int) (*pb.ListUsersResponse_Response, error) {
+	var page int32
+
+	if data.Page > int32(pageCount) {
+		page = int32(pageCount)
+	} else {
+		page = int32(data.Page) - 1
+	}
+
+	queryRes, err := h.DB.Query("SELECT in.* as user, role FROM manages WHERE out = $warehouseID ORDER BY role DESC LIMIT $limit START $page", map[string]interface{}{
+		"warehouseID": data.WarehouseID,
+		"limit":       data.Limit,
+		"page":        data.Limit * page,
+	})
+
+	if err != nil {
+		log.Println(err)
+		return &pb.ListUsersResponse_Response{}, fmt.Errorf("error while querying db: %v", err.Error())
+	}
+
+	res := &pb.ListUsersResponse_Response{
+		Pagination: &pb.ListUsersResponsePagination{
+			Limit: data.Limit,
+			Page:  data.Page,
+			Total: int32(pageCount),
+		},
+	}
+
+	list, err := surrealdb.SmartUnmarshal[[]*pb.ListUsersResponseList](queryRes, nil)
+
+	if err != nil {
+		log.Println(err)
+		return &pb.ListUsersResponse_Response{}, fmt.Errorf("error while unmarshaling data: %v", err)
+	}
+
+	res.List = list
+
+	return res, nil
+
+}
+
+func (h *Handler) CountUsers(data *pb.ListUsersRequest) (int, error) {
+
+	queryRes, err := h.DB.Query("SELECT count() FROM manages WHERE out = $warehouseID GROUP ALL", map[string]string{
+		"warehouseID": data.WarehouseID,
+	})
+
+	if err != nil {
+		log.Println(err)
+		return 0, fmt.Errorf("error while counting users: %v", err.Error())
+	}
+
+	res := make([]Transaction, 1)
+
+	err = surrealdb.Unmarshal(queryRes, &res)
+
+	if err != nil {
+		log.Println(err)
+		return 0, fmt.Errorf("error while unmarshaling data:%v", err)
+	}
+	return int(res[0].Result[0]["count"].(float64)), nil
+
 }
