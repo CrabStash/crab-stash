@@ -19,6 +19,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 		routes.POST("/create", svc.Create)
 		routes.DELETE("/delete/:warehouseID", svc.Delete)
 		routes.GET("/info/:warehouseID", svc.GetInfo)
+		routes.GET("/", svc.ListWarehouses)
 		routes.DELETE("/users/delete/:warehouseID/:userID", svc.RemoveUser)
 		routes.PUT("/update/:warehouseID", svc.Update)
 		routes.PUT("/users/role", svc.ChangeRole)
@@ -95,4 +96,8 @@ func (svc *ServiceClient) ListUsers(ctx *gin.Context) {
 		return
 	}
 	routes.ListUsers(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) ListWarehouses(ctx *gin.Context) {
+	routes.ListWarehouses(ctx, svc.Client)
 }
