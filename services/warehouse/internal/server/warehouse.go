@@ -168,13 +168,41 @@ func (s *Server) ListUsers(ctx context.Context, req *pb.ListUsersRequest) (*pb.L
 	return res, nil
 }
 
-func (s *Server) InternalFetchWarehouses(ctx context.Context, req *pb.InternalFetchWarehousesRequest) (*pb.InternalFetchWarehousesResponse, error) {
-	warehouses, err := s.H.FetchWarehouses(req)
+func (s *Server) ListWarehouses(ctx context.Context, req *pb.ListWarehousesRequest) (*pb.ListWarehousesResponse, error) {
+
+	count, err := s.H.CountWarehouses(req)
+
 	if err != nil {
 		log.Println(err)
-		return &pb.InternalFetchWarehousesResponse{}, fmt.Errorf("%v", err)
+		return &pb.ListWarehousesResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.ListWarehousesResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
 	}
-	return warehouses, nil
+
+	pages := math.Ceil(float64(count) / float64(req.Limit))
+
+	warehouses, err := s.H.ListWarehouses(req, int(pages))
+
+	if err != nil {
+		log.Println(err)
+		return &pb.ListWarehousesResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.ListWarehousesResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
+	}
+
+	return &pb.ListWarehousesResponse{
+		Status: http.StatusOK,
+		Response: &pb.ListWarehousesResponse_Data{
+			Data: warehouses,
+		},
+	}, nil
+
 }
 
 func (s *Server) InternalDeleteAcc(ctx context.Context, req *pb.InternalDeleteAccRequest) (*emptypb.Empty, error) {
