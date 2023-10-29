@@ -19,7 +19,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 		routes.POST("/create", svc.Create)
 		routes.DELETE("/delete/:warehouseID", svc.Delete)
 		routes.GET("/info/:warehouseID", svc.GetInfo)
-		routes.GET("/", svc.ListWarehouses)
+		routes.GET("", svc.ListWarehouses)
 		routes.DELETE("/users/delete/:warehouseID/:userID", svc.RemoveUser)
 		routes.PUT("/update/:warehouseID", svc.Update)
 		routes.PUT("/users/role", svc.ChangeRole)

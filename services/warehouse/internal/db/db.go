@@ -335,8 +335,12 @@ func (h *Handler) CountUsers(data *pb.ListUsersRequest) (int, error) {
 		log.Println(err)
 		return 0, fmt.Errorf("error while unmarshaling data:%v", err)
 	}
-	return int(res[0].Result[0]["count"].(float64)), nil
 
+	if len(res[0].Result) < 1 {
+		return 0, nil
+	}
+
+	return int(res[0].Result[0]["count"].(float64)), nil
 }
 
 func (h *Handler) CountWarehouses(data *pb.ListWarehousesRequest) (int, error) {
@@ -358,6 +362,11 @@ func (h *Handler) CountWarehouses(data *pb.ListWarehousesRequest) (int, error) {
 		log.Println(err)
 		return 0, fmt.Errorf("error while unmarshaling data:%v", err)
 	}
+
+	if len(res[0].Result) < 1 {
+		return 0, nil
+	}
+
 	return int(res[0].Result[0]["count"].(float64)), nil
 
 }

@@ -40,17 +40,9 @@ DEFINE FIELD capacity ON TABLE warehouse TYPE int
 
 DEFINE INDEX name_owner_pairs ON TABLE warehouse COLUMNS name,owner UNIQUE;
 
-DEFINE FIELD title ON TABLE categories TYPE object
+DEFINE FIELD title ON TABLE categories TYPE string
   ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD title.pl ON TABLE categories type string
-  ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD title.en ON TABLE categories type string
-  ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD description ON TABLE categories TYPE object
-  ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD description.pl ON TABLE categories type string
-  ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD description.en ON TABLE categories type string
+DEFINE FIELD description ON TABLE categories TYPE string
   ASSERT $value != NULL AND $value != NONE;
 DEFINE FIELD properties ON TABLE categories type array
   ASSERT $value != NULL AND $value != NONE;

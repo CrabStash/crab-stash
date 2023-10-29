@@ -1,0 +1,42 @@
+{
+  "title": "Create field form",
+  "description": "Fill the form to create field",
+  "type": "object",
+  "required": [
+    "name",
+    "help",
+    "type"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name of field"
+    },
+    "help": {
+      "type": "string",
+      "title": "Help"
+    },
+    "types": {
+      "enumNames": [
+        "string",
+        "integer",
+        "date",
+        "datetime"
+      ],
+      "enum": [
+        {
+          "name": "string"
+        },
+        {
+          "name": "integer"
+        },
+        {
+          "name": "date"
+        },
+        {
+          "name": "datetime"
+        }
+      ]
+    }
+  }
+}
