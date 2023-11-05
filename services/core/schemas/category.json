@@ -1,0 +1,52 @@
+{
+  "schema": {
+    "title": "Create category",
+    "description": "Fill the form to create category",
+    "type": "object",
+    "required": [
+      "name",
+      "categoryDesc",
+      "logo",
+      "parents",
+      "fields"
+    ],
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Category Name"
+      },
+      "desc": {
+        "type": "string",
+        "title": "Category description"
+      },
+      "logo": {
+        "type": "string",
+        "title": "Logo",
+        "format": "data-url"
+      },
+      "parents": {
+        "title": "Category parents",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "fields": {
+        "title": "Category fields",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "uiSchema": {
+    "parents": {
+      "ui:widget": "parentsWidget"
+    },
+    "fields": {
+      "ui:widget": "fieldsWidget"
+    }
+  }
+}
+

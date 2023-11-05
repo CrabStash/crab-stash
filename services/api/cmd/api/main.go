@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/CrabStash/crab-stash/api/internal/auth"
+	"github.com/CrabStash/crab-stash/api/internal/core"
 	"github.com/CrabStash/crab-stash/api/internal/user"
 	"github.com/CrabStash/crab-stash/api/internal/warehouse"
 	valid "github.com/asaskevich/govalidator"
@@ -20,7 +21,8 @@ func main() {
 	}))
 	authSvc := *auth.RegisterRoutes(r)
 	_ = user.RegisterRoutes(r, &authSvc)
-	_ = warehouse.RegisterRoutes(r, &authSvc)
+	warehouseSvc := *warehouse.RegisterRoutes(r, &authSvc)
+	_ = core.RegisterRoutes(r, &authSvc, &warehouseSvc)
 
 	r.Run(":8080")
 }

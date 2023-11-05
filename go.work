@@ -5,4 +5,5 @@ use (
 	services/auth
 	services/user
 	services/warehouse
+	services/core
 )
