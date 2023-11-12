@@ -16,7 +16,7 @@ type Server struct {
 	H db.Handler
 }
 
-func (s *Server) ServeCategorySchema(ctx context.Context, req *emptypb.Empty) (*pb.Schema, error) {
+func (s *Server) NewCategorySchema(ctx context.Context, req *emptypb.Empty) (*pb.Schema, error) {
 	file, err := os.Open("/schemas/category.json")
 
 	if err != nil {
@@ -39,7 +39,7 @@ func (s *Server) ServeCategorySchema(ctx context.Context, req *emptypb.Empty) (*
 
 }
 
-func (s *Server) ServeFieldSchema(ctx context.Context, req *emptypb.Empty) (*pb.Schema, error) {
+func (s *Server) NewFieldSchema(ctx context.Context, req *emptypb.Empty) (*pb.Schema, error) {
 	file, err := os.Open("/schemas/field.json")
 
 	if err != nil {
@@ -59,4 +59,14 @@ func (s *Server) ServeFieldSchema(ctx context.Context, req *emptypb.Empty) (*pb.
 	return &pb.Schema{
 		FileContent: byteValue,
 	}, nil
+}
+
+func (s *Server) FieldsInheritance(ctx context.Context, req *pb.InheritanceRequest) (*pb.InheritanceResponse, error) {
+	res := s.H.FieldsInheritance(req)
+	return res, nil
+}
+
+func (s *Server) GetCategorySchema(ctx context.Context, req *pb.ServeCategoryRequest) (*pb.ServeCategoryResponse, error) {
+	res := s.H.GetCategory(req)
+	return res, nil
 }

@@ -10,24 +10,46 @@ import (
 func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient, warehouseSvc *warehouse.ServiceClient) *ServiceClient {
 	a := auth.InitAuthMiddleware(authSvc)
 	svc := &ServiceClient{
-		Client: InitServiceClient(),
+		Client:    InitServiceClient(),
+		Warehouse: &warehouseSvc.Client,
 	}
 
 	routes := r.Group("core")
 	schemas := routes.Group("schemas")
+	category := routes.Group("category")
 	routes.Use(a.AuthRequired)
 	{
-		schemas.GET("/category", svc.GetCategorySchema)
-		schemas.GET("/field", svc.GetFieldSchema)
+		schemas.GET("/category", svc.NewCategorySchema)
+		schemas.GET("/field", svc.NewFieldSchema)
+		category.GET("/inheritance", svc.FieldsInheritance)
+		category.GET("/category", svc.GetCategorySchema)
 	}
 
 	return svc
 }
 
+func (svc *ServiceClient) NewCategorySchema(ctx *gin.Context) {
+	routes.NewCategorySchema(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) NewFieldSchema(ctx *gin.Context) {
+	routes.NewFieldSchema(ctx, svc.Client)
+}
+
 func (svc *ServiceClient) GetCategorySchema(ctx *gin.Context) {
+	code, err := warehouse.PermissionHandler(0, *svc.Warehouse, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
 	routes.GetCategorySchema(ctx, svc.Client)
 }
 
-func (svc *ServiceClient) GetFieldSchema(ctx *gin.Context) {
-	routes.GetFieldSchema(ctx, svc.Client)
+func (svc *ServiceClient) FieldsInheritance(ctx *gin.Context) {
+	code, err := warehouse.PermissionHandler(2, *svc.Warehouse, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+	routes.FieldsInheritance(ctx, svc.Client)
 }

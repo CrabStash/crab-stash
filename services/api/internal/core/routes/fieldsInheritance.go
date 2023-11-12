@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
-	payload := pb.ServeCategoryRequest{}
+func FieldsInheritance(ctx *gin.Context, c pb.CoreServiceClient) {
+	payload := pb.InheritanceRequest{}
 
 	if err := ctx.BindJSON(&payload); err != nil {
 		log.Println(err)
@@ -27,7 +27,7 @@ func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
 		return
 	}
 
-	res, _ := c.GetCategorySchema(context.Background(), &payload)
+	res, _ := c.FieldsInheritance(context.Background(), &payload)
 
 	ctx.JSON(int(res.Status), res)
 }
