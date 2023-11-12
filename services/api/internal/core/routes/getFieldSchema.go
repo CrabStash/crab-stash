@@ -12,7 +12,7 @@ import (
 )
 
 func GetFieldSchema(ctx *gin.Context, c pb.CoreServiceClient) {
-	schema, _ := c.ServeFieldSchema(context.Background(), &emptypb.Empty{})
+	schema, _ := c.NewFieldSchema(context.Background(), &emptypb.Empty{})
 
 	var placeholder map[string]interface{}
 

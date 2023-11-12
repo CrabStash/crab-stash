@@ -12,7 +12,7 @@ import (
 )
 
 func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
-	schema, _ := c.ServeCategorySchema(context.Background(), &emptypb.Empty{})
+	schema, _ := c.NewCategorySchema(context.Background(), &emptypb.Empty{})
 
 	var placeholder map[string]interface{}
 
