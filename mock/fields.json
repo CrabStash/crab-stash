@@ -1,203 +1,50 @@
-{
-  {
-    "name": "Yichun",
-    "help": "Cochlearius cochlearius",
-    "type": "string"
-  }, {
-    "name": "Buka Island",
-    "help": "Anathana ellioti",
-    "type": "string"
-  }, {
-    "name": "Kinshasa",
-    "help": "Pedetes capensis",
-    "type": "string"
-  }, {
-    "name": "Fort Richardson(Anchorage)",
-    "help": "Colobus guerza",
-    "type": "string"
-  }, {
-    "name": "Aberdeen",
-    "help": "Bettongia penicillata",
-    "type": "string"
-  }, {
-    "name": "La Pedrera",
-    "help": "Ardea golieth",
-    "type": "string"
-  }, {
-    "name": "Gasan",
-    "help": "Plegadis ridgwayi",
-    "type": "string"
-  }, {
-    "name": "Ławica",
-    "help": "Vulpes vulpes",
-    "type": "string"
-  }, {
-    "name": "Linden",
-    "help": "Pycnonotus barbatus",
-    "type": "string"
-  }, {
-    "name": "Singleton",
-    "help": "Choloepus hoffmani",
-    "type": "string"
-  }, {
-    "name": "Lydd, Ashford",
-    "help": "Phascogale calura",
-    "type": "string"
-  }, {
-    "name": "string",
-    "help": "Otaria flavescens",
-    "type": "string"
-  }, {
-    "name": "Burley",
-    "help": "Anathana ellioti",
-    "type": "string"
-  }, {
-    "name": "Bragança Paulista",
-    "help": "Microcebus murinus",
-    "type": "string"
-  }, {
-    "name": "string",
-    "help": "Pytilia melba",
-    "type": "string"
-  }, {
-    "name": "Gore Bay",
-    "help": "unavailable",
-    "type": "string"
-  }, {
-    "name": "Barre/Montpelier",
-    "help": "Columba livia",
-    "type": "string"
-  }, {
-    "name": "Lublin",
-    "help": "Rhea americana",
-    "type": "string"
-  }, {
-    "name": "Paranaíba",
-    "help": "Dicrostonyx groenlandicus",
-    "type": "string"
-  }, {
-    "name": "Los Andes",
-    "help": "Macaca fuscata",
-    "type": "string"
-  }, {
-    "name": "Bonito",
-    "help": "Bos taurus",
-    "type": "string"
-  }, {
-    "name": "Gora",
-    "help": "Larus sp.",
-    "type": "string"
-  }, {
-    "name": "Loyengalani",
-    "help": "Chamaelo sp.",
-    "type": "string"
-  }, {
-    "name": "Catamarca",
-    "help": "Varanus salvator",
-    "type": "string"
-  }, {
-    "name": "Fort McMurray",
-    "help": "Ardea cinerea",
-    "type": "string"
-  }, {
-    "name": "Ailuk Island",
-    "help": "Cathartes aura",
-    "type": "string"
-  }, {
-    "name": "Key Lake",
-    "help": "unavailable",
-    "type": "string"
-  }, {
-    "name": "Gelendzhik",
-    "help": "Naja haje",
-    "type": "string"
-  }, {
-    "name": "Escanaba",
-    "help": "Certotrichas paena",
-    "type": "string"
-  }, {
-    "name": "Mejit Atoll",
-    "help": "Megaderma spasma",
-    "type": "string"
-  }, {
-    "name": "Muccan Station",
-    "help": "Uraeginthus bengalus",
-    "type": "string"
-  }, {
-    "name": "Greenfield",
-    "help": "Mellivora capensis",
-    "type": "string"
-  }, {
-    "name": "Zhayrem",
-    "help": "Larus fuliginosus",
-    "type": "string"
-  }, {
-    "name": "Rotterdam",
-    "help": "Dendrohyrax brucel",
-    "type": "string"
-  }, {
-    "name": "Cut Bank",
-    "help": "Bubulcus ibis",
-    "type": "string"
-  }, {
-    "name": "Fort Campbell/Hopkinsville",
-    "help": "Dicrostonyx groenlandicus",
-    "type": "string"
-  }, {
-    "name": "Rio Grande",
-    "help": "Varanus salvator",
-    "type": "string"
-  }, {
-    "name": "Mo i Rana",
-    "help": "Laniaurius atrococcineus",
-    "type": "string"
-  }, {
-    "name": "Manokwari-Papua Island",
-    "help": "Elephas maximus bengalensis",
-    "type": "string"
-  }, {
-    "name": "Mpumalanga",
-    "help": "Lybius torquatus",
-    "type": "string"
-  }, {
-    "name": "Albany",
-    "help": "Pseudocheirus peregrinus",
-    "type": "string"
-  }, {
-    "name": "Fayetteville",
-    "help": "Acrobates pygmaeus",
-    "type": "string"
-  }, {
-    "name": "Istanbul",
-    "help": "Merops nubicus",
-    "type": "string"
-  }, {
-    "name": "Hof",
-    "help": "Hymenolaimus malacorhynchus",
-    "type": "string"
-  }, {
-    "name": "Stephenville",
-    "help": "Macropus eugenii",
-    "type": "string"
-  }, {
-    "name": "São Borja",
-    "help": "Falco mexicanus",
-    "type": "string"
-  }, {
-    "name": "Wanuma",
-    "help": "Larus dominicanus",
-    "type": "string"
-  }, {
-    "name": "Kraków",
-    "help": "Tockus erythrorhyncus",
-    "type": "string"
-  }, {
-    "name": "Farmington",
-    "help": "Axis axis",
-    "type": "string"
-  }, {
-    "name": "string",
-    "help": "Macaca mulatta",
-    "type": "string"
-  }
-}
+[{"type":"datetime","title":"Fanoodle","help":"Fundamental zero administration matrices"},
+{"type":"date","title":"Gigazoom","help":"Inverse bottom-line website"},
+{"type":"datetime","title":"Omba","help":"Front-line composite service-desk"},
+{"type":"string","title":"Shufflester","help":"Cross-platform upward-trending productivity"},
+{"type":"date","title":"Jabbercube","help":"Streamlined 4th generation protocol"},
+{"type":"string","title":"Realblab","help":"Polarised tangible info-mediaries"},
+{"type":"string","title":"Tanoodle","help":"Networked intermediate conglomeration"},
+{"type":"datetime","title":"Wordpedia","help":"Synchronised context-sensitive extranet"},
+{"type":"datetime","title":"Quinu","help":"Implemented local moratorium"},
+{"type":"date","title":"Youtags","help":"Multi-channelled fresh-thinking success"},
+{"type":"date","title":"Digitube","help":"Cross-platform content-based model"},
+{"type":"string","title":"Thoughtworks","help":"Compatible scalable orchestration"},
+{"type":"datetime","title":"Bubblebox","help":"Object-based eco-centric knowledge base"},
+{"type":"date","title":"Youspan","help":"Total stable solution"},
+{"type":"datetime","title":"Photobean","help":"Persevering motivating solution"},
+{"type":"integer","title":"Thoughtblab","help":"Cross-platform grid-enabled pricing structure"},
+{"type":"date","title":"Zoonder","help":"Switchable client-driven projection"},
+{"type":"integer","title":"Yotz","help":"Open-source encompassing portal"},
+{"type":"datetime","title":"Gabspot","help":"Open-source bi-directional internet solution"},
+{"type":"integer","title":"Photobug","help":"Organic exuding access"},
+{"type":"string","title":"Reallinks","help":"Proactive non-volatile firmware"},
+{"type":"datetime","title":"Oodoo","help":"Intuitive logistical data-warehouse"},
+{"type":"string","title":"Wikizz","help":"Quality-focused intermediate emulation"},
+{"type":"date","title":"Browsebug","help":"Cross-group 3rd generation policy"},
+{"type":"date","title":"Brainbox","help":"Right-sized attitude-oriented matrices"},
+{"type":"integer","title":"Tambee","help":"Total global pricing structure"},
+{"type":"string","title":"Tazz","help":"Cross-group human-resource capability"},
+{"type":"integer","title":"Minyx","help":"Switchable grid-enabled workforce"},
+{"type":"integer","title":"Oozz","help":"Polarised static emulation"},
+{"type":"date","title":"Yakijo","help":"Optimized transitional instruction set"},
+{"type":"integer","title":"Bubbletube","help":"Enterprise-wide incremental time-frame"},
+{"type":"datetime","title":"Dabtype","help":"Exclusive executive artificial intelligence"},
+{"type":"string","title":"Livefish","help":"Exclusive 24/7 hub"},
+{"type":"datetime","title":"Tagopia","help":"Progressive homogeneous knowledge user"},
+{"type":"date","title":"Cogilith","help":"User-friendly bifurcated solution"},
+{"type":"integer","title":"Fadeo","help":"Intuitive holistic success"},
+{"type":"integer","title":"Mynte","help":"Switchable 24 hour open architecture"},
+{"type":"string","title":"Kamba","help":"Public-key solution-oriented alliance"},
+{"type":"string","title":"Quire","help":"Configurable attitude-oriented interface"},
+{"type":"datetime","title":"Yacero","help":"Persevering well-modulated portal"},
+{"type":"date","title":"Edgepulse","help":"Cross-platform incremental migration"},
+{"type":"datetime","title":"Babblestorm","help":"Progressive explicit help-desk"},
+{"type":"integer","title":"Twinder","help":"Quality-focused full-range framework"},
+{"type":"date","title":"Dabshots","help":"Optional upward-trending definition"},
+{"type":"string","title":"Brainverse","help":"Profit-focused solution-oriented policy"},
+{"type":"date","title":"Aimbu","help":"Up-sized intangible archive"},
+{"type":"datetime","title":"Izio","help":"Integrated mission-critical process improvement"},
+{"type":"date","title":"Ainyx","help":"Cloned fault-tolerant support"},
+{"type":"string","title":"Einti","help":"Devolved homogeneous emulation"},
+{"type":"integer","title":"Jaloo","help":"Balanced contextually-based parallelism"}]

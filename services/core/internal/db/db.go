@@ -13,6 +13,30 @@ type Handler struct {
 	DB *surrealdb.DB
 }
 
+type Transaction struct {
+	Result []map[string]interface{} `json:"result"`
+	Status string                   `json:"status"`
+	Time   string                   `json:"time"`
+}
+
+type SchemaProperties struct {
+	Title string `json:"title"`
+	Help  string `json:"help"`
+	Type  string `json:"type"`
+	Id    string `json:"id"`
+}
+type SchemaResult struct {
+	Description string             `json:"description"`
+	Title       string             `json:"title"`
+	Properties  []SchemaProperties `json:"properties"`
+}
+
+type ServeSchema struct {
+	Result SchemaResult `json:"result"`
+	Status string       `json:"status"`
+	Time   string       `json:"time"`
+}
+
 func Init() Handler {
 	db, err := surrealdb.New(os.Getenv("SURREALDB_ADDR"))
 
@@ -33,9 +57,9 @@ func Init() Handler {
 	return Handler{db}
 }
 
-func (h *Handler) FieldsInheritance(data *pb.InheritanceRequest) *pb.InheritanceResponse {
-	queryRes, err := h.DB.Query("SELECT title, id, properties[*].name as fieldNames FROM (SELECT VALUE parents FROM ONLY $categoryID);", map[string]string{
-		"categoryID": data.CategoryID,
+func (h *Handler) FieldsInheritance(data *pb.GenericFetchRequest) *pb.InheritanceResponse {
+	queryRes, err := h.DB.Query("SELECT title, id, properties[*].title as fieldNames FROM (SELECT VALUE parents FROM ONLY $categoryID);", map[string]string{
+		"categoryID": data.EntityID,
 	})
 
 	if err != nil {
@@ -69,31 +93,52 @@ func (h *Handler) FieldsInheritance(data *pb.InheritanceRequest) *pb.Inheritance
 
 }
 
-func (h *Handler) GetCategory(data *pb.ServeCategoryRequest) *pb.ServeCategoryResponse {
+func (h *Handler) GetCategory(data *pb.GenericFetchRequest) *pb.GenericFetchResponse {
 	queryRes, err := h.DB.Query("SELECT description, title, array::flatten(array::union(properties[*].*, parents.properties[*].*)) as properties FROM ONLY $categoryID;", map[string]string{
-		"categoryID": data.CategoryID,
+		"categoryID": data.EntityID,
 	})
 
 	if err != nil {
-		return &pb.ServeCategoryResponse{
+		return &pb.GenericFetchResponse{
 			Status: http.StatusInternalServerError,
-			Response: &pb.ServeCategoryResponse_Error{
+			Response: &pb.GenericFetchResponse_Error{
 				Error: err.Error(),
 			},
 		}
 	}
 
-	log.Println(queryRes)
+	res := make([]ServeSchema, 1)
+	err = surrealdb.Unmarshal(queryRes, &res)
 
-	return &pb.ServeCategoryResponse{
+	if err != nil {
+		return &pb.GenericFetchResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.GenericFetchResponse_Error{
+				Error: err.Error(),
+			},
+		}
+	}
+
+	properties := make(map[string]*pb.Field)
+
+	for i := 0; i < len(res[0].Result.Properties); i++ {
+		field := res[0].Result.Properties[i]
+		properties[field.Id] = &pb.Field{
+			Title: field.Title,
+			Type:  field.Type,
+			Help:  field.Help,
+		}
+	}
+
+	return &pb.GenericFetchResponse{
 		Status: http.StatusOK,
-		Response: &pb.ServeCategoryResponse_Data{
-			Data: &pb.ServeCategoryResponse_Response{
-				Schema: &pb.Category{
-					Title:       "test",
-					Description: "test",
+		Response: &pb.GenericFetchResponse_Data{
+			Data: &pb.GenericFetchResponse_Response{
+				Schema: &pb.GenericSchema{
+					Title:       res[0].Result.Title,
+					Description: res[0].Result.Description,
 					Type:        "object",
-					Properties:  make(map[string]*pb.Field),
+					Properties:  properties,
 				},
 			},
 		},
@@ -101,17 +146,31 @@ func (h *Handler) GetCategory(data *pb.ServeCategoryRequest) *pb.ServeCategoryRe
 
 }
 
-// func (h *Handler) CoreMiddleware(data *pb.CoreMiddlewareRequest) *pb.CoreMiddlewareResponse {
-// 	queryRes, err := h.DB.Query("SELECT * FROM $target WHERE in = $entityID AND out = $warehouseID", map[string]string{
-// 		"target":      strings.Split(data.Target, ":")[0],
-// 		"entityID":    data.Target,
-// 		"warehouseID": data.WarehouseID,
-// 	})
+func (h *Handler) CoreMiddleware(data *pb.GenericFetchRequest) (*pb.CoreMiddlewareResponse, error) {
+	queryRes, err := h.DB.Query("SELECT * FROM type::table($target) WHERE in = $entityID AND out = $warehouseID", map[string]string{
+		"target":      data.Type,
+		"entityID":    data.EntityID,
+		"warehouseID": data.WarehouseID,
+	})
 
-// 	if err != nil {
-// 		return &pb.CoreMiddlewareResponse{
-// 			DoesItBelong: false,
-// 		}
-// 	}
+	if err != nil {
+		return &pb.CoreMiddlewareResponse{}, err
+	}
 
-// }
+	res := make([]Transaction, 1)
+	err = surrealdb.Unmarshal(queryRes, &res)
+
+	if err != nil {
+		return &pb.CoreMiddlewareResponse{}, err
+	}
+
+	if len(res[0].Result) == 0 {
+		return &pb.CoreMiddlewareResponse{
+			DoesItBelong: false,
+		}, nil
+	} else {
+		return &pb.CoreMiddlewareResponse{
+			DoesItBelong: true,
+		}, nil
+	}
+}

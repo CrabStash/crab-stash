@@ -11,13 +11,13 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient, warehouseSvc *wa
 	a := auth.InitAuthMiddleware(authSvc)
 	svc := &ServiceClient{
 		Client:    InitServiceClient(),
-		Warehouse: &warehouseSvc.Client,
+		Warehouse: warehouseSvc.Client,
 	}
 
 	routes := r.Group("core")
+	routes.Use(a.AuthRequired)
 	schemas := routes.Group("schemas")
 	category := routes.Group("category")
-	routes.Use(a.AuthRequired)
 	{
 		schemas.GET("/category", svc.NewCategorySchema)
 		schemas.GET("/field", svc.NewFieldSchema)
@@ -37,7 +37,13 @@ func (svc *ServiceClient) NewFieldSchema(ctx *gin.Context) {
 }
 
 func (svc *ServiceClient) GetCategorySchema(ctx *gin.Context) {
-	code, err := warehouse.PermissionHandler(0, *svc.Warehouse, ctx)
+	code, err := warehouse.PermissionHandler(0, svc.Warehouse, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+
+	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
 		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
@@ -46,7 +52,13 @@ func (svc *ServiceClient) GetCategorySchema(ctx *gin.Context) {
 }
 
 func (svc *ServiceClient) FieldsInheritance(ctx *gin.Context) {
-	code, err := warehouse.PermissionHandler(2, *svc.Warehouse, ctx)
+	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+
+	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
 		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return

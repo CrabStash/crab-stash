@@ -61,12 +61,20 @@ func (s *Server) NewFieldSchema(ctx context.Context, req *emptypb.Empty) (*pb.Sc
 	}, nil
 }
 
-func (s *Server) FieldsInheritance(ctx context.Context, req *pb.InheritanceRequest) (*pb.InheritanceResponse, error) {
+func (s *Server) FieldsInheritance(ctx context.Context, req *pb.GenericFetchRequest) (*pb.InheritanceResponse, error) {
 	res := s.H.FieldsInheritance(req)
 	return res, nil
 }
 
-func (s *Server) GetCategorySchema(ctx context.Context, req *pb.ServeCategoryRequest) (*pb.ServeCategoryResponse, error) {
+func (s *Server) GetCategorySchema(ctx context.Context, req *pb.GenericFetchRequest) (*pb.GenericFetchResponse, error) {
 	res := s.H.GetCategory(req)
+	return res, nil
+}
+
+func (s *Server) CoreMiddleware(ctx context.Context, req *pb.GenericFetchRequest) (*pb.CoreMiddlewareResponse, error) {
+	res, err := s.H.CoreMiddleware(req)
+	if err != nil {
+		return &pb.CoreMiddlewareResponse{}, err
+	}
 	return res, nil
 }

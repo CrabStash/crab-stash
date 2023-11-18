@@ -21,8 +21,8 @@ func main() {
 	}))
 	authSvc := *auth.RegisterRoutes(r)
 	_ = user.RegisterRoutes(r, &authSvc)
-	warehouseSvc := *warehouse.RegisterRoutes(r, &authSvc)
-	_ = core.RegisterRoutes(r, &authSvc, &warehouseSvc)
+	warehouseSvc := warehouse.RegisterRoutes(r, &authSvc)
+	_ = core.RegisterRoutes(r, &authSvc, warehouseSvc)
 
 	r.Run(":8080")
 }

@@ -11,7 +11,7 @@ import (
 
 type ServiceClient struct {
 	Client    pb.CoreServiceClient
-	Warehouse *pbWarehouse.WarehouseServiceClient
+	Warehouse pbWarehouse.WarehouseServiceClient
 }
 
 func InitServiceClient() pb.CoreServiceClient {

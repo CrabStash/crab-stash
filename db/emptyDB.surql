@@ -3,7 +3,6 @@ BEGIN TRANSACTION;
 DEFINE TABLE user SCHEMAFULL;
 DEFINE TABLE warehouse SCHEMAFULL;
 DEFINE TABLE manages SCHEMAFULL;
-DEFINE TABLE entities SCHEMAFULL;
 DEFINE TABLE categories SCHEMAFULL;
 DEFINE TABLE fields SCHEMAFULL;
 DEFINE TABLE entities SCHEMALESS;
@@ -81,5 +80,12 @@ DEFINE INDEX unique_relationships ON TABLE fields_to_warehouses COLUMNS in, out 
 DEFINE FIELD in ON TABLE entities_to_warehouses type record(entities);
 DEFINE FIELD out ON TABLE entities_to_warehouses type record(warehouse);
 DEFINE INDEX unique_relationships ON TABLE entities_to_warehouses COLUMNS in, out UNIQUE;
+
+DEFINE FIELD title ON TABLE fields type string
+  ASSERT $value != NULL AND $value != NONE;
+DEFINE FIELD help ON TABLE fields type string
+  ASSERT $value != NULL AND $value != NONE;
+DEFINE FIELD type ON TABLE fields type string
+  ASSERT $value != NULL AND $value != NONE;
 
 COMMIT TRANSACTION;

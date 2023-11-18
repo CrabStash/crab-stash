@@ -1,0 +1,7 @@
+[
+  {"title": "kategoria A", "description": "A", "parents": [], "properties": ["fields:19cnkznj77b09zuqmugc"]},
+  {"title": "kategoria AA", "description": "AA", "parents": ["categories:55ldvropjbij4ofyrr6r"], "properties": ["fields:ld7inkmf9tg5vaf9dwrs", "fields:36a9tmke5hnuy5h2pczu"]},
+  {"title": "kategoria AB", "description": "AB", "parents": ["categories:55ldvropjbij4ofyrr6r"], "properties": ["fields:gsnulwrqa7s3uzfx8uwn"]},
+  {"title": "kategoria AAA", "description": "AAA", "parents": ["categories:55ldvropjbij4ofyrr6r", "categories:jjl4y7ws2keh68nalonj"], "properties": ["fields:zeiqo8oe5don0sk7sjmi"]},
+  {"title": "kategoria ABA", "description": "ABA", "parents": ["categories:55ldvropjbij4ofyrr6r", "categories:rkysc4zkbckj1558zzcn"], "properties": ["fields:4816rl13ymz2k5lny7r1"]}
+]

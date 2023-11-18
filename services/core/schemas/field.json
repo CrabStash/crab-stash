@@ -12,7 +12,7 @@
 			"type": "string",
 			"title": "Help"
 		},
-		"types": {
+		"type": {
 			"enumNames": ["string", "integer", "date", "datetime"],
 			"enum": [
 				{
