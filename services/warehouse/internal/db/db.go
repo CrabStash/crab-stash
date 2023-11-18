@@ -113,7 +113,10 @@ func (h *Handler) GetInfo(data *pb.GetInfoRequest) (*pb.GetInfoResponse_Data, er
 }
 
 func (h *Handler) UpdateWarehouse(data *pb.UpdateRequest) error {
-	_, err := h.DB.Change(data.WarehouseID, data)
+	_, err := h.DB.Query("UPDATE $warehouseID MERGE $data", map[string]interface{}{
+		"warehouseID": data.WarehouseID,
+		"data":        data,
+	})
 	if err != nil {
 		log.Println(err)
 		return fmt.Errorf("error while updating record: %v", err)
