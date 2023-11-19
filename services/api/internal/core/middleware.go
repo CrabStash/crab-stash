@@ -1,12 +1,10 @@
 package core
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"strings"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/core/proto"
 	valid "github.com/asaskevich/govalidator"
@@ -15,20 +13,21 @@ import (
 
 func CoreMiddleware(client pb.CoreServiceClient, ctx *gin.Context, target string) (int, error) {
 
-	payload := pb.GenericFetchRequest{}
+	payload := pb.CoreMiddlewareRequest{}
 
-	byteBody, err := ioutil.ReadAll(ctx.Request.Body)
-	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("error while reading request body")
-	}
-	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(byteBody))
+	EntityID := strings.Split(ctx.Param("id"), "/")[0]
+	CategoryID := strings.Split(ctx.Param("categoryID"), "/")[0]
+	WarehouseID := strings.Split(ctx.Param("warehouseID"), "/")[0]
 
-	if err := json.Unmarshal(byteBody, &payload); err != nil {
-		return http.StatusBadRequest, fmt.Errorf("%v", err.Error())
-	}
+	payload.In = EntityID
 	payload.Type = target
+	if target == "entities_to_categories" {
+		payload.Out = CategoryID
+	} else {
+		payload.Out = WarehouseID
+	}
 
-	_, err = valid.ValidateStruct(&payload)
+	_, err := valid.ValidateStruct(&payload)
 	if err != nil {
 		return http.StatusBadRequest, fmt.Errorf("%v", err.Error())
 	}

@@ -24,6 +24,16 @@ github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231113103042-7800f3cda906
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231113103042-7800f3cda906/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231115132235-07eb52ff64f4 h1:SIrgomeHGfdOwBuWaDLZ1IJX/H0l5U1Y/1YrPdGH6kE=
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231115132235-07eb52ff64f4/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231118134112-ad066d805455 h1:CIvBj7aVRwtVbtqg9AaPf6AnG9nizb0SBGkrp5J9U7Q=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231118134112-ad066d805455/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231118140625-9b2d0ce686d4 h1:7kEhhyY27MO+VNbzmXtzMQ4Cl32tCmq+v1ZHlK/nuU0=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231118140625-9b2d0ce686d4/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231119131218-a8d82ea88d60 h1:U5MrIdVacTIXvhTGkyY909DN8zLZbD4cl5wyCTXLlJw=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231119131218-a8d82ea88d60/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231119133812-0eec0d34e8f9 h1:RAFwnVkFrDF+TQEHi1wgz67zZL7f05JWOH+Hkd0VKeY=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231119133812-0eec0d34e8f9/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231119141659-b0ea9ce548b4 h1:OPO1lnydAisGWVT5MjuSv31bdGmkvLMLworT4CfRtng=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231119141659-b0ea9ce548b4/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 h1:DklsrG3dyBCFEj5IhUbnKptjxatkF07cF2ak3yi77so=
 github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2/go.mod h1:WaHUgvxTVq04UNunO+XhnAqY/wQc+bxr74GqbsZ/Jqw=
 github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1O2AihPM=
