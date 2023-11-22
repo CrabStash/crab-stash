@@ -30,16 +30,19 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient, warehouseSvc *wa
 		category.POST("/:warehouseID", svc.CreateCategory)
 		category.PATCH("/:id/warehouse/:warehouseID", svc.EditCategory)
 		category.DELETE("/:id/warehouse/:warehouseID", svc.DeleteCategory)
+		category.GET("/warehouse/:warehouseID", svc.ListCategories)
 		// fields
 		field.GET("/:id/warehouse/:warehouseID", svc.GetFieldData)
 		field.POST("/:warehouseID", svc.CreateField)
 		field.PATCH("/:id/warehouse/:warehouseID", svc.EditField)
 		field.DELETE("/:id/warehouse/:warehouseID", svc.DeleteField)
+		field.GET("/warehouse/:warehouseID", svc.ListFields)
 		// entities
 		entity.GET("/:id/category/:categoryID/warehouse/:warehouseID", svc.GetEntityData)
 		entity.POST("/:categoryID/warehouse/:warehouseID", svc.CreateEntity)
 		entity.PATCH("/:id/category/:categoryID/warehouse/:warehouseID", svc.EditEntity)
 		entity.DELETE("/:id/category/:categoryID/warehouse/:warehouseID", svc.DeleteEntity)
+		entity.GET("/warehouse/:warehouseID", svc.ListFields)
 	}
 
 	return svc
@@ -260,6 +263,38 @@ func (svc *ServiceClient) GetEntityData(ctx *gin.Context) {
 	}
 
 	routes.GetEntityData(ctx, svc.Client)
+}
+
+// List
+
+func (svc *ServiceClient) ListFields(ctx *gin.Context) {
+	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+
+	routes.ListFields(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) ListCategories(ctx *gin.Context) {
+	code, err := warehouse.PermissionHandler(0, svc.Warehouse, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+
+	routes.ListCategories(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) ListEntities(ctx *gin.Context) {
+	code, err := warehouse.PermissionHandler(0, svc.Warehouse, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+
+	routes.ListEntities(ctx, svc.Client)
 }
 
 // Misc

@@ -4,6 +4,8 @@ import (
 	"context"
 	"io/ioutil"
 	"log"
+	"math"
+	"net/http"
 	"os"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/core/proto"
@@ -132,6 +134,102 @@ func (s *Server) GetFieldData(ctx context.Context, req *pb.GenericFetchRequest) 
 func (s *Server) GetEntityDataData(ctx context.Context, req *pb.GenericFetchRequest) (*pb.GetEntityDataResponse, error) {
 	res := s.H.GetEntityData(req)
 	return res, nil
+}
+
+// List
+func (s *Server) ListFields(ctx context.Context, req *pb.PaginatedFieldFetchRequest) (*pb.PaginatedFieldsFetchResponse, error) {
+
+	count, err := s.H.Count("", req.WarehouseID, "fields_to_warehouses")
+
+	if err != nil {
+		log.Println(err)
+		return &pb.PaginatedFieldsFetchResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.PaginatedFieldsFetchResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
+	}
+
+	pages := math.Ceil(float64(count) / float64(req.Limit))
+
+	fields, err := s.H.ListFields(req, int(pages))
+
+	if err != nil {
+		log.Println(err)
+		return &pb.PaginatedFieldsFetchResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.PaginatedFieldsFetchResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
+	}
+
+	return &pb.PaginatedFieldsFetchResponse{
+		Status: http.StatusOK,
+		Response: &pb.PaginatedFieldsFetchResponse_Data{
+			Data: fields,
+		},
+	}, nil
+
+}
+
+func (s *Server) ListCategories(ctx context.Context, req *pb.PaginatedCategoriesFetchRequest) (*pb.PaginatedCategoriesFetchResponse, error) {
+	categories, err := s.H.ListCategories(req)
+
+	if err != nil {
+		log.Println(err)
+		return &pb.PaginatedCategoriesFetchResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.PaginatedCategoriesFetchResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
+	}
+
+	return &pb.PaginatedCategoriesFetchResponse{
+		Status: http.StatusOK,
+		Response: &pb.PaginatedCategoriesFetchResponse_Data{
+			Data: categories,
+		},
+	}, nil
+
+}
+
+func (s *Server) ListEntities(ctx context.Context, req *pb.PaginatedEntitiesFetchRequest) (*pb.PaginatedEntititesFetchResponse, error) {
+	count, err := s.H.Count(req.Id, req.WarehouseID, "entities_to_categories")
+
+	if err != nil {
+		log.Println(err)
+		return &pb.PaginatedEntititesFetchResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.PaginatedEntititesFetchResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
+	}
+
+	pages := math.Ceil(float64(count) / float64(req.Limit))
+
+	fields, err := s.H.ListEntities(req, int(pages))
+
+	if err != nil {
+		log.Println(err)
+		return &pb.PaginatedEntititesFetchResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.PaginatedEntititesFetchResponse_Error{
+				Error: err.Error(),
+			},
+		}, nil
+	}
+
+	return &pb.PaginatedEntititesFetchResponse{
+		Status: http.StatusOK,
+		Response: &pb.PaginatedEntititesFetchResponse_Data{
+			Data: fields,
+		},
+	}, nil
+
 }
 
 // Misc
