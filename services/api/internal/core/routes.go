@@ -42,7 +42,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient, warehouseSvc *wa
 		entity.POST("/:categoryID/warehouse/:warehouseID", svc.CreateEntity)
 		entity.PATCH("/:id/category/:categoryID/warehouse/:warehouseID", svc.EditEntity)
 		entity.DELETE("/:id/category/:categoryID/warehouse/:warehouseID", svc.DeleteEntity)
-		entity.GET("/warehouse/:warehouseID", svc.ListFields)
+		entity.GET("/warehouse/:warehouseID", svc.ListEntities)
 	}
 
 	return svc
