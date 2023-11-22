@@ -60,15 +60,6 @@ DEFINE FIELD role ON TABLE manages TYPE number
 
 DEFINE INDEX unique_relationships ON TABLE manages COLUMNS in, out UNIQUE;
 
-DEFINE FIELD data ON TABLE entities type object
-  ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD meta ON TABLE entities type object
-  ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD meta.status ON TABLE entities type string;
-DEFINE FIELD meta.release ON TABLE entities type datetime;
-DEFINE FIELD meta.discount ON TABLE entities type number;
-DEFINE FIELD meta.discount_deadline ON TABLE entities type datetime;
-
 DEFINE FIELD in ON TABLE categories_to_warehouses type record(categories);
 DEFINE FIELD out ON TABLE categories_to_warehouses type record(warehouse);
 DEFINE INDEX unique_relationships ON TABLE categories_to_warehouses COLUMNS in, out UNIQUE;

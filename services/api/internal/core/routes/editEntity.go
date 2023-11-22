@@ -1,14 +1,16 @@
 package routes
 
 import (
+	"bytes"
 	"context"
-	"log"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/core/proto"
-	valid "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func EditEntity(ctx *gin.Context, c pb.CoreServiceClient) {
@@ -16,17 +18,30 @@ func EditEntity(ctx *gin.Context, c pb.CoreServiceClient) {
 
 	EntityID := strings.Split(ctx.Param("id"), "/")[0]
 
-	if err := ctx.BindJSON(&payload); err != nil {
+	byteBody, err := ioutil.ReadAll(ctx.Request.Body)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
+	}
+	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(byteBody))
+
+	bytesToMap := make(map[string]interface{})
+
+	if err := json.Unmarshal(byteBody, &bytesToMap); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
+	}
+
+	formData, err := structpb.NewStruct(bytesToMap)
+
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	payload.EntityID = EntityID
+	payload.FormData = formData
 
-	_, err := valid.ValidateStruct(&payload)
-	if err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
+	if len(bytesToMap) == 0 || EntityID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": "missing values"}})
 		return
 	}
 

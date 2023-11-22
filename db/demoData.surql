@@ -34,13 +34,6 @@ DEFINE INDEX unique_relationships ON categories_to_warehouses FIELDS in, out UNI
 
 DEFINE TABLE entities SCHEMALESS;
 
-DEFINE FIELD data ON entities TYPE object ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD meta ON entities TYPE object ASSERT $value != NULL AND $value != NONE;
-DEFINE FIELD meta.discount ON entities TYPE number;
-DEFINE FIELD meta.discount_deadline ON entities TYPE datetime;
-DEFINE FIELD meta.release ON entities TYPE datetime;
-DEFINE FIELD meta.status ON entities TYPE string;
-
 -- ------------------------------
 -- TABLE: entities_to_warehouses
 -- ------------------------------

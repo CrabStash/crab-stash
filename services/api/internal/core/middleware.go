@@ -25,8 +25,11 @@ func CoreMiddleware(client pb.CoreServiceClient, ctx *gin.Context, target string
 	} else {
 		payload.Out = WarehouseID
 	}
-
+	// create -> cat_id, whID -> categories_to_warehouses
+	// edit i fetch -> id, cat_id, whID -> categories_to_warehouses && entities_to_categories
 	if target == "categories_to_warehouses" && EntityID == "" {
+		payload.In = CategoryID
+	} else if EntityID != "" && CategoryID != "" && target == "categories_to_warehouses" {
 		payload.In = CategoryID
 	} else {
 		payload.In = EntityID

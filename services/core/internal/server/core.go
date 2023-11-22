@@ -131,7 +131,7 @@ func (s *Server) GetFieldData(ctx context.Context, req *pb.GenericFetchRequest) 
 	return res, nil
 }
 
-func (s *Server) GetEntityDataData(ctx context.Context, req *pb.GenericFetchRequest) (*pb.GetEntityDataResponse, error) {
+func (s *Server) GetEntityData(ctx context.Context, req *pb.GenericFetchRequest) (*pb.GetEntityDataResponse, error) {
 	res := s.H.GetEntityData(req)
 	return res, nil
 }

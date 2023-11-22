@@ -8,7 +8,7 @@ import (
 
 	pb "github.com/CrabStash/crab-stash-protofiles/core/proto"
 	surrealdb "github.com/surrealdb/surrealdb.go"
-	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type Handler struct {
@@ -179,11 +179,11 @@ func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateRe
 	queryRes, err := h.DB.Query(`
 		BEGIN TRANSACTION;
 		LET $entities = type::thing("entities", rand::uuid());
-		CREATE $entities CONTENT $data RETURN id;
+		CREATE $entities CONTENT $formData RETURN id;
 		RELATE $entities -> entities_to_categories -> $category RETURN NONE;
 		COMMIT TRANSACTION;
 	`, map[string]interface{}{
-		"data":     data.FormData,
+		"formData": data.FormData.AsMap()["formData"],
 		"category": data.CategoryID,
 	})
 
@@ -198,7 +198,6 @@ func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateRe
 	}
 
 	var finalRes []Transaction
-
 	err = surrealdb.Unmarshal(queryRes, &finalRes)
 
 	if err != nil {
@@ -256,7 +255,7 @@ func (h *Handler) EditField(data *pb.EditFieldRequest) *pb.GenericEditDeleteResp
 func (h *Handler) EditEntity(data *pb.EditEntityRequest) *pb.GenericEditDeleteResponse {
 	_, err := h.DB.Query("UPDATE $entity MERGE $data", map[string]interface{}{
 		"entity": data.EntityID,
-		"data":   data.FormData,
+		"data":   data.FormData.AsMap()["formData"],
 	})
 
 	if err != nil {
@@ -487,7 +486,7 @@ func (h *Handler) GetFieldData(data *pb.GenericFetchRequest) *pb.GetFieldDataRes
 }
 
 func (h *Handler) GetEntityData(data *pb.GenericFetchRequest) *pb.GetEntityDataResponse {
-	queryRes, err := h.DB.Query("SELECT * FROM $entity", map[string]string{"entity": data.EntityID})
+	queryRes, err := h.DB.Query("SELECT * OMIT id FROM $entity", map[string]string{"entity": data.EntityID})
 
 	if err != nil {
 		return &pb.GetEntityDataResponse{
@@ -511,12 +510,22 @@ func (h *Handler) GetEntityData(data *pb.GenericFetchRequest) *pb.GetEntityDataR
 		}
 	}
 
-	log.Println(queryRes, res[0].Result)
+	formData, err := structpb.NewStruct(res[0].Result[0])
+
+	if err != nil {
+		return &pb.GetEntityDataResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.GetEntityDataResponse_Error{
+				Error: fmt.Errorf("error while parsing Entity data: %s", err.Error()).Error(),
+			},
+		}
+	}
+
 	return &pb.GetEntityDataResponse{
 		Status: http.StatusOK,
 		Response: &pb.GetEntityDataResponse_Data{
 			Data: &pb.GetEntityDataResponse_Response{
-				FormData: make(map[string]*anypb.Any),
+				FormData: formData,
 			},
 		},
 	}
