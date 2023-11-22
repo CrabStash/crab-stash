@@ -109,7 +109,7 @@ func (h *Handler) CreateField(data *pb.CreateFieldRequest) *pb.GenericCreateResp
 	}
 
 	return &pb.GenericCreateResponse{
-		Status: http.StatusInternalServerError,
+		Status: http.StatusOK,
 		Response: &pb.GenericCreateResponse_Data{
 			Data: &pb.GenericCreateResponse_Response{
 				Id: fieldID,
@@ -166,7 +166,7 @@ func (h *Handler) CreateCategory(data *pb.CreateCategoryRequest) *pb.GenericCrea
 	}
 
 	return &pb.GenericCreateResponse{
-		Status: http.StatusInternalServerError,
+		Status: http.StatusOK,
 		Response: &pb.GenericCreateResponse_Data{
 			Data: &pb.GenericCreateResponse_Response{
 				Id: categoryID,
@@ -223,7 +223,7 @@ func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateRe
 	}
 
 	return &pb.GenericCreateResponse{
-		Status: http.StatusInternalServerError,
+		Status: http.StatusOK,
 		Response: &pb.GenericCreateResponse_Data{
 			Data: &pb.GenericCreateResponse_Response{
 				Id: entityID,

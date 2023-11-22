@@ -19,12 +19,17 @@ func CoreMiddleware(client pb.CoreServiceClient, ctx *gin.Context, target string
 	CategoryID := strings.Split(ctx.Param("categoryID"), "/")[0]
 	WarehouseID := strings.Split(ctx.Param("warehouseID"), "/")[0]
 
-	payload.In = EntityID
 	payload.Type = target
 	if target == "entities_to_categories" {
 		payload.Out = CategoryID
 	} else {
 		payload.Out = WarehouseID
+	}
+
+	if target == "categories_to_warehouses" && EntityID == "" {
+		payload.In = CategoryID
+	} else {
+		payload.In = EntityID
 	}
 
 	_, err := valid.ValidateStruct(&payload)
