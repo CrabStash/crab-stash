@@ -123,7 +123,6 @@ func (h *Handler) UpdateWarehouse(data *pb.UpdateRequest) error {
 		"warehouseID": data.WarehouseID,
 		"data":        data,
 	})
-
 	if err != nil {
 		log.Println(err)
 		return fmt.Errorf("error while updating record: %v", err)

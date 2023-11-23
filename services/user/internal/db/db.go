@@ -55,8 +55,8 @@ func (h *Handler) GetMeInfo(data *pb.MeInfoRequest) (*pb.MeInfoResponse_Data, er
 func (h *Handler) DbUpdateUserInfo(usr *pb.UpdateUserInfoRequest) error {
 
 	_, err := h.DB.Query("UPDATE $userID MERGE $data", map[string]interface{}{
-		"warehouseID": usr.UserID,
-		"data":        usr.Data,
+		"userID": usr.UserID,
+		"data":   usr.Data,
 	})
 
 	if err != nil {

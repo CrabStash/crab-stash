@@ -15,8 +15,9 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
+		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "accept", "origin", "X-Requested-With", "Authorization", "Accept-Encoding", "Content-Length", "Cache-Control"},
 		ExposeHeaders:    []string{"Content-Length"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 		AllowCredentials: true,
 	}))
 	authSvc := *auth.RegisterRoutes(r)
