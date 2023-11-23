@@ -11,8 +11,8 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func GetFieldSchema(ctx *gin.Context, c pb.CoreServiceClient) {
-	schema, _ := c.NewFieldSchema(context.Background(), &emptypb.Empty{})
+func NewCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
+	schema, _ := c.NewCategorySchema(context.Background(), &emptypb.Empty{})
 
 	var placeholder map[string]interface{}
 

@@ -18,7 +18,7 @@ func Update(ctx *gin.Context, c pb.WarehouseServiceClient) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
 		return
 	}
-	payload.WarehouseID = strings.Split(ctx.Param("id"), "/")[0]
+	payload.WarehouseID = strings.Split(ctx.Param("warehouseID"), "/")[0]
 
 	_, err := valid.ValidateStruct(&payload)
 

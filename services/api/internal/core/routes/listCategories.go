@@ -11,14 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
-	payload := pb.GenericFetchRequest{}
+func ListCategories(ctx *gin.Context, c pb.CoreServiceClient) {
+	payload := pb.PaginatedCategoriesFetchRequest{}
 
-	EntityID := strings.Split(ctx.Param("id"), "/")[0]
-	WarehouseID := strings.Split(ctx.Param("warehouseID"), "/")[0]
-
-	payload.EntityID = EntityID
-	payload.WarehouseID = WarehouseID
+	payload.WarehouseID = strings.Split(ctx.Param("warehouseID"), "/")[0]
+	payload.Id = ctx.DefaultQuery("category_id", "")
 
 	_, err := valid.ValidateStruct(&payload)
 	if err != nil {
@@ -27,7 +24,11 @@ func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
 		return
 	}
 
-	res, _ := c.GetCategorySchema(context.Background(), &payload)
+	res, _ := c.ListCategories(context.Background(), &payload)
 
+	if res.Status >= 300 {
+		ctx.JSON(int(res.Status), res)
+		return
+	}
 	ctx.JSON(int(res.Status), res)
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PermissionHandler(permissionLevel int, c pb.WarehouseServiceClient, ctx *gin.Context) (int, error) {
+func PermissionHandler(permissionLevel int, client pb.WarehouseServiceClient, ctx *gin.Context) (int, error) {
 	UserID := strings.Split(ctx.Param("userID"), "/")[0]
 	WarehouseID := strings.Split(ctx.Param("warehouseID"), "/")[0]
 	uuid, _ := ctx.Get("uuid")
@@ -43,7 +43,7 @@ func PermissionHandler(permissionLevel int, c pb.WarehouseServiceClient, ctx *gi
 		return http.StatusBadRequest, fmt.Errorf("%v", err.Error())
 	}
 
-	res, _ := c.InternalFetchWarehouseRole(context.Background(), &payload)
+	res, _ := client.InternalFetchWarehouseRole(context.Background(), &payload)
 
 	if res.Status >= 300 {
 		return int(res.Status), fmt.Errorf("%s", res.GetError())

@@ -83,10 +83,9 @@ func (s *Server) UpdateWarehouse(ctx context.Context, req *pb.UpdateRequest) (*p
 func (s *Server) AddUsersToWarehouse(ctx context.Context, req *pb.AddUsersRequest) (*pb.AddUsersResponse, error) {
 	err := s.H.AddUserToWarehouse(req)
 	if err != nil {
-		log.Println(err)
 		return &pb.AddUsersResponse{
 			Status:   http.StatusInternalServerError,
-			Response: "error while adding user to warehouse",
+			Response: fmt.Errorf("error while adding user to warehouse: %s", err.Error()).Error(),
 		}, nil
 	}
 	return &pb.AddUsersResponse{

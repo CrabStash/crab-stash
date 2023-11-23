@@ -21,6 +21,12 @@ type Transaction struct {
 	Time   string                   `json:"time"`
 }
 
+type AddUserTransaction struct {
+	Result string `json:"result"`
+	Status string `json:"status"`
+	Time   string `json:"time"`
+}
+
 func Init() Handler {
 	db, err := surrealdb.New(os.Getenv("SURREALDB_ADDR"))
 
@@ -134,15 +140,35 @@ func (h *Handler) DeleteWarehouse(data *pb.DeleteRequest) error {
 }
 
 func (h *Handler) AddUserToWarehouse(data *pb.AddUsersRequest) error {
-	_, err := h.DB.Query("RELATE $userID -> manages -> $warehouse SET role = $role;", map[string]interface{}{
+	queryRes, err := h.DB.Query(`
+	IF (SELECT VALUE email FROM user WHERE email == $email) IS NOT [] {
+		RELATE (SELECT VALUE id FROM user WHERE email == $email) -> manages -> $warehouse SET role = $role;
+	} ELSE {
+		THROW "User does not exist!"
+	};`, map[string]interface{}{
 		"warehouse": data.WarehouseID,
-		"userID":    data.UserIds,
+		"email":     data.Email,
 		"role":      pb.Roles_ROLE_VIEWER,
 	})
+
 	if err != nil {
 		log.Println(err)
 		return fmt.Errorf("error while adding user to warehouse: %v", err)
 	}
+
+	res := make([]AddUserTransaction, 1)
+
+	err = surrealdb.Unmarshal(queryRes, &res)
+
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("error while unmarshaling data: %v", err)
+	}
+
+	if res[0].Status == "ERR" {
+		return fmt.Errorf("%s", res[0].Result)
+	}
+
 	return nil
 }
 

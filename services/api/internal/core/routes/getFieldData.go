@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
+func GetFieldData(ctx *gin.Context, c pb.CoreServiceClient) {
 	payload := pb.GenericFetchRequest{}
 
 	EntityID := strings.Split(ctx.Param("id"), "/")[0]
@@ -27,7 +27,7 @@ func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
 		return
 	}
 
-	res, _ := c.GetCategorySchema(context.Background(), &payload)
+	res, _ := c.GetFieldData(context.Background(), &payload)
 
 	ctx.JSON(int(res.Status), res)
 }

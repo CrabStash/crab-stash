@@ -11,14 +11,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
-	payload := pb.GenericFetchRequest{}
+func EditCategory(ctx *gin.Context, c pb.CoreServiceClient) {
+	payload := pb.EditCategoryRequest{}
 
-	EntityID := strings.Split(ctx.Param("id"), "/")[0]
-	WarehouseID := strings.Split(ctx.Param("warehouseID"), "/")[0]
+	CategoryID := strings.Split(ctx.Param("id"), "/")[0]
 
-	payload.EntityID = EntityID
-	payload.WarehouseID = WarehouseID
+	if err := ctx.BindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
+		return
+	}
+
+	payload.CategoryID = CategoryID
 
 	_, err := valid.ValidateStruct(&payload)
 	if err != nil {
@@ -27,7 +30,7 @@ func GetCategorySchema(ctx *gin.Context, c pb.CoreServiceClient) {
 		return
 	}
 
-	res, _ := c.GetCategorySchema(context.Background(), &payload)
+	res, _ := c.EditCategory(context.Background(), &payload)
 
 	ctx.JSON(int(res.Status), res)
 }
