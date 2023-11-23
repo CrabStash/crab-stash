@@ -173,7 +173,7 @@ func (h *Handler) AddUserToWarehouse(data *pb.AddUsersRequest) error {
 }
 
 func (h *Handler) RemoveUserFromWarehouse(data *pb.RemoveUserRequest) error {
-	_, err := h.DB.Query("DELETE $userID -> manages WHERE out=$warehouse;", map[string]string{
+	_, err := h.DB.Query("DELETE manages WHERE in=$userID AND out=$warehouse;", map[string]string{
 		"warehouse": data.WarehouseID,
 		"userID":    data.UserIds,
 	})
