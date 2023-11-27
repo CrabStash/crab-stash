@@ -1,33 +1,27 @@
 {
-	"title": "Create field form",
-	"description": "Fill the form to create field",
-	"type": "object",
-	"required": ["title", "help", "type"],
-	"properties": {
-		"title": {
-			"type": "string",
-			"title": "Name of field"
-		},
-		"help": {
-			"type": "string",
-			"title": "Help"
-		},
-		"type": {
-			"enumNames": ["string", "integer", "date", "datetime"],
-			"enum": [
-				{
-					"name": "string"
-				},
-				{
-					"name": "integer"
-				},
-				{
-					"name": "date"
-				},
-				{
-					"name": "datetime"
-				}
-			]
-		}
-	}
+  "schema": {
+    "title": "Create field form",
+    "description": "Fill the form to create field",
+    "type": "object",
+    "required": ["title", "help", "type"],
+    "properties": {
+      "title": {
+        "type": "string",
+        "title": "Name of field"
+      },
+      "help": {
+        "type": "string",
+        "title": "Help"
+      },
+      "type": {
+        "title": "Type of field",
+        "type": "string",
+        "enumNames": ["string", "integer", "date", "datetime"],
+        "enum": ["string", "integer", "date", "datetime"]
+      }
+    }
+  },
+  "uiSchema": {
+    "ui:order": ["title", "help", "type"]
+  }
 }
