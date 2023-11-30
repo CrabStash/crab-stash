@@ -17,6 +17,7 @@ func CreateEntity(ctx *gin.Context, c pb.CoreServiceClient) {
 	payload := pb.CreateEntityRequest{}
 
 	CategoryID := strings.Split(ctx.Param("categoryID"), "/")[0]
+	WarehouseID := strings.Split(ctx.Param("warehouseID"), "/")[0]
 
 	byteBody, err := ioutil.ReadAll(ctx.Request.Body)
 	if err != nil {
@@ -39,6 +40,7 @@ func CreateEntity(ctx *gin.Context, c pb.CoreServiceClient) {
 
 	payload.FormData = formData
 	payload.CategoryID = CategoryID
+	payload.WarehouseID = WarehouseID
 
 	if len(bytesToMap) == 0 || CategoryID == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": "missing values"}})
