@@ -7,21 +7,33 @@
     "properties": {
       "title": {
         "type": "string",
-        "title": "Name of field"
+        "title": "Name of field",
+        "help": "This field contains name of your field"
       },
       "help": {
         "type": "string",
-        "title": "Help"
+        "title": "Help",
+        "help": "Here you can write a help message for someone filling this field"
       },
       "type": {
         "title": "Type of field",
         "type": "string",
         "enumNames": ["string", "integer", "date", "datetime"],
-        "enum": ["string", "integer", "date", "datetime"]
+        "enum": ["string", "integer", "date", "datetime"],
+        "help": "Select what type of data will the field hold"
       }
     }
   },
   "uiSchema": {
-    "ui:order": ["title", "help", "type"]
+    "ui:order": ["title", "help", "type"],
+    "title": {
+      "ui:placeholder": "Enter name of field"
+    },
+    "help": {
+      "ui:placeholder": "Enter help information"
+    },
+    "type": {
+      "ui:placeholder": "Enter type of field"
+    }
   }
 }

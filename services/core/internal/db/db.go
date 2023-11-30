@@ -21,6 +21,12 @@ type Transaction struct {
 	Time   string                   `json:"time"`
 }
 
+type CreateTransaction struct {
+	Result string `json:"result"`
+	Status string `json:"status"`
+	Time   string `json:"time"`
+}
+
 type SchemaProperties struct {
 	Title string `json:"title"`
 	Help  string `json:"help"`
@@ -140,6 +146,7 @@ func (h *Handler) CreateCategory(data *pb.CreateCategoryRequest) *pb.GenericCrea
 		}
 	}
 
+	log.Println(queryRes)
 	var finalRes []Transaction
 
 	err = surrealdb.Unmarshal(queryRes, &finalRes)
@@ -177,14 +184,25 @@ func (h *Handler) CreateCategory(data *pb.CreateCategoryRequest) *pb.GenericCrea
 
 func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateResponse {
 	queryRes, err := h.DB.Query(`
-		BEGIN TRANSACTION;
+	BEGIN TRANSACTION;
+	RETURN {
+		LET $categories = (SELECT VALUE in.id FROM categories_to_warehouses WHERE out = $warehouseID);
+		LET $entitiesCount = math::sum((SELECT VALUE in.quantity || 0 as quantity FROM entities_to_categories WHERE out.id IN $categories));
 		LET $entities = type::thing("entities", rand::uuid());
-		CREATE $entities CONTENT $formData RETURN id;
-		RELATE $entities -> entities_to_categories -> $category RETURN NONE;
+		LET $isPhysical = (SELECT VALUE isPhysical FROM ONLY $warehouseID);
+		IF $isPhysical IS true AND (SELECT VALUE capacity FROM ONLY $warehouseID) < ($entitiesCount + $newEntityCount) {
+			THROW "Cannot create entity, this will overflow the warehouse";
+		};
+		CREATE $entities CONTENT $formData;
+		RELATE $entities -> entities_to_categories -> $category;
+		RETURN $entities;
+	};
 		COMMIT TRANSACTION;
 	`, map[string]interface{}{
-		"formData": data.FormData.AsMap()["formData"],
-		"category": data.CategoryID,
+		"formData":       data.FormData.AsMap()["formData"],
+		"warehouseID":    data.WarehouseID,
+		"newEntityCount": data.FormData.AsMap()["formData"].(map[string]interface{})["quantity"],
+		"category":       data.CategoryID,
 	})
 
 	if err != nil {
@@ -197,7 +215,7 @@ func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateRe
 		}
 	}
 
-	var finalRes []Transaction
+	finalRes := make([]CreateTransaction, 1)
 	err = surrealdb.Unmarshal(queryRes, &finalRes)
 
 	if err != nil {
@@ -210,13 +228,13 @@ func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateRe
 		}
 	}
 
-	entityID, ok := finalRes[1].Result[0]["id"].(string)
-	if !ok {
+	entityID := finalRes[0].Result
+	if finalRes[0].Status == "ERR" {
 		log.Println(err)
 		return &pb.GenericCreateResponse{
 			Status: http.StatusInternalServerError,
 			Response: &pb.GenericCreateResponse_Error{
-				Error: fmt.Errorf("error while asserting type: %s", err.Error()).Error(),
+				Error: fmt.Errorf("error while creating entity: %s", finalRes[0].Result).Error(),
 			},
 		}
 	}
@@ -253,15 +271,47 @@ func (h *Handler) EditField(data *pb.EditFieldRequest) *pb.GenericEditDeleteResp
 }
 
 func (h *Handler) EditEntity(data *pb.EditEntityRequest) *pb.GenericEditDeleteResponse {
-	_, err := h.DB.Query("UPDATE $entity MERGE $data", map[string]interface{}{
-		"entity": data.EntityID,
-		"data":   data.FormData.AsMap()["formData"],
+	queryRes, err := h.DB.Query(`BEGIN TRANSACTION;
+	RETURN {
+		LET $categories = (SELECT VALUE in.id FROM categories_to_warehouses WHERE out = $warehouseID);
+		LET $entitiesCount = math::sum((SELECT VALUE in.quantity || 0 as quantity FROM entities_to_categories WHERE out.id IN $categories));
+		LET $entities = type::thing("entities", rand::uuid());
+		LET $isPhysical = (SELECT VALUE isPhysical FROM ONLY $warehouseID);
+		LET $oldQuantity = (SELECT VALUE quantity FROM ONLY $entity);
+		IF $isPhysical IS true AND (SELECT VALUE capacity FROM ONLY $warehouseID) < ($entitiesCount + ($newEntityCount - $oldQuantity)) AND $oldQuantity < $newEntityCount {
+			THROW "Cannot edit entity, this will overflow the warehouse";
+		};
+		UPDATE $entity MERGE $data
+	};
+		COMMIT TRANSACTION;`, map[string]interface{}{
+		"entity":         data.EntityID,
+		"warehouseID":    data.WarehouseID,
+		"data":           data.FormData.AsMap()["formData"],
+		"newEntityCount": data.FormData.AsMap()["formData"].(map[string]interface{})["quantity"],
 	})
 
 	if err != nil {
 		return &pb.GenericEditDeleteResponse{
 			Status:   http.StatusInternalServerError,
 			Response: fmt.Errorf("error while updating entity: %s", err.Error()).Error(),
+		}
+	}
+
+	finalRes := make([]CreateTransaction, 1)
+	err = surrealdb.Unmarshal(queryRes, &finalRes)
+
+	if err != nil {
+		log.Println(err)
+		return &pb.GenericEditDeleteResponse{
+			Status:   http.StatusInternalServerError,
+			Response: fmt.Errorf("error while unmarshalling data: %s", err.Error()).Error(),
+		}
+	}
+
+	if finalRes[0].Status == "ERR" {
+		return &pb.GenericEditDeleteResponse{
+			Status:   http.StatusBadRequest,
+			Response: fmt.Errorf("error while creating entity: %s", finalRes[0].Result).Error(),
 		}
 	}
 
@@ -391,6 +441,12 @@ func (h *Handler) GetCategorySchema(data *pb.GenericFetchRequest) *pb.CategorySc
 		Title: "Name",
 		Type:  "string",
 		Help:  "Entities name",
+	}
+
+	properties["quantity"] = &pb.Field{
+		Title: "Quantity",
+		Type:  "integer",
+		Help:  "Item quantity",
 	}
 
 	properties["description"] = &pb.Field{
@@ -562,7 +618,7 @@ func (h *Handler) FieldsInheritance(data *pb.GenericFetchRequest) *pb.Inheritanc
 		{
 			Id:         "root",
 			Name:       "Root category",
-			FieldNames: []string{"Name", "Description"},
+			FieldNames: []string{"Name", "Description", "Quantity"},
 		},
 	}, res...)
 

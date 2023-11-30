@@ -21,6 +21,7 @@ DEFINE FIELD passwd ON TABLE user TYPE string
 DEFINE FIELD avatar ON TABLE user TYPE string
   DEFAULT "https://google.com"
   ASSERT string::is::url($value);
+DEFINE FIELD default_warehouse ON TABLE user TYPE record(warehouse);
 DEFINE FIELD owns ON TABLE user TYPE option<array>
   DEFAULT []
   ASSERT array::distinct($value) == $value;
@@ -50,7 +51,8 @@ DEFINE FIELD description ON TABLE categories TYPE string
 DEFINE FIELD properties ON TABLE categories type array
   ASSERT $value != NULL AND $value != NONE;
 DEFINE FIELD properties.* ON TABLE categories type record(fields);
-DEFINE FIELD parents ON TABLE categories type array;
+DEFINE FIELD parents ON TABLE categories type array
+DEFAULT [];
 DEFINE FIELD parents.* ON TABLE categories type record(categories);
 
 DEFINE FIELD in ON TABLE manages TYPE record(user);

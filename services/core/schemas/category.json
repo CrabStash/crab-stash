@@ -13,30 +13,35 @@
     "properties": {
       "name": {
         "type": "string",
-        "title": "Category Name"
+        "title": "Category Name",
+        "help": "The name of your category"
       },
       "desc": {
         "type": "string",
-        "title": "Category description"
+        "title": "Category description",
+        "help": "A description of your category"
       },
       "logo": {
         "type": "string",
         "title": "Logo",
-        "format": "data-url"
+        "format": "data-url",
+        "help": "Accepted file types: *.jpg/jpeg and .png"
       },
       "parents": {
         "title": "Category parents",
         "type": "array",
         "items": {
           "type": "string"
-        }
+        },
+        "help": "Placement of your category in the categories tree"
       },
       "fields": {
         "title": "Category fields",
         "type": "array",
         "items": {
           "type": "string"
-        }
+        },
+        "help": "Fields that are a part of your category"
       }
     }
   },

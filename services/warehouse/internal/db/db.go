@@ -60,6 +60,7 @@ func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 		capacity: $capacity
 	} RETURN id;
 	UPDATE $userID SET owns += $warehouse RETURN NONE;
+	IF (SELECT VALUE default_warehouse FROM ONLY $userID) IS NONE { UPDATE $userID SET default_warehouse = $warehouse };
 	RELATE $userID -> manages -> $warehouse SET role = $role RETURN NONE;
 	COMMIT TRANSACTION;
 	`, map[string]interface{}{
@@ -193,7 +194,7 @@ func (h *Handler) ListWarehouses(data *pb.ListWarehousesRequest, pageCount int) 
 		page = int32(data.Page) - 1
 	}
 
-	queryRes, err := h.DB.Query("SELECT out.* as warehouse, role FROM manages WHERE in = $uuid ORDER BY role DESC LIMIT $limit START $page", map[string]interface{}{
+	queryRes, err := h.DB.Query(`SELECT out.* as warehouse, role, in.default_warehouse IS out.id as isDefault FROM manages WHERE in = $uuid ORDER BY isDefault,role DESC LIMIT $limit START $page`, map[string]interface{}{
 		"uuid":  data.Uuid,
 		"limit": data.Limit,
 		"page":  data.Limit * page,
