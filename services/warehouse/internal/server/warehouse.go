@@ -65,6 +65,12 @@ func (s *Server) GetInfo(ctx context.Context, req *pb.GetInfoRequest) (*pb.GetIn
 	}, nil
 }
 
+func (s *Server) Dashboard(ctx context.Context, req *pb.DashboardRequest) (*pb.DashboardResponse, error) {
+	response := s.H.Dashboard(req)
+
+	return response, nil
+}
+
 func (s *Server) UpdateWarehouse(ctx context.Context, req *pb.UpdateRequest) (*pb.UpdateResponse, error) {
 	err := s.H.UpdateWarehouse(req)
 	if err != nil {

@@ -47,6 +47,51 @@ func Init() Handler {
 	return Handler{db}
 }
 
+func (h *Handler) Dashboard(data *pb.DashboardRequest) *pb.DashboardResponse {
+	queryRes, err := h.DB.Query(`
+	BEGIN TRANSACTION;
+	LET $categories = (SELECT VALUE in.id FROM categories_to_warehouses WHERE out.id = $warehouseID);
+	LET $warehouseValue = math::sum((SELECT VALUE in.quantity * in.price  FROM entities_to_categories WHERE out.id IN $categories));
+	LET $entitiesCount = math::sum((SELECT VALUE in.quantity || 0 as quantity FROM entities_to_categories WHERE out.id IN $categories));
+	LET $uniqueEntities = (SELECT count() FROM entities_to_categories WHERE out.id IN $categories GROUP ALL);
+	LET $employees = (SELECT count() FROM manages WHERE out.id = $warehouseID GROUP ALL);
+	LET $newestEntities = (SELECT in.name as name, in.description as description, in.created, out.id as category_id FROM entities_to_categories WHERE out.id IN $categories ORDER BY in.created DESC LIMIT 8);
+	RETURN { warehouseValue: math::fixed($warehouseValue, 2), entitiesCount: { all: $entitiesCount, unique: $uniqueEntities[0].count || 0 }, employees: $employees[0].count, newestEntities: $newestEntities };
+	COMMIT TRANSACTION;
+	`, map[string]string{
+		"warehouseID": data.WarehouseID,
+	})
+
+	if err != nil {
+		log.Println(err)
+		return &pb.DashboardResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.DashboardResponse_Error{
+				Error: fmt.Errorf("error while querying db: %v", err).Error(),
+			},
+		}
+	}
+
+	res, err := surrealdb.SmartUnmarshal[pb.DashboardResponse_Response](queryRes, nil)
+
+	if err != nil {
+		log.Println(err)
+		return &pb.DashboardResponse{
+			Status: http.StatusInternalServerError,
+			Response: &pb.DashboardResponse_Error{
+				Error: fmt.Errorf("error while unmarshalling data: %v", err).Error(),
+			},
+		}
+	}
+
+	return &pb.DashboardResponse{
+		Status: http.StatusOK,
+		Response: &pb.DashboardResponse_Data{
+			Data: &res,
+		},
+	}
+}
+
 func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 	res, err := h.DB.Query(`
 	BEGIN TRANSACTION;

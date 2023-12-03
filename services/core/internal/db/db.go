@@ -195,6 +195,7 @@ func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateRe
 		};
 		CREATE $entities CONTENT $formData;
 		RELATE $entities -> entities_to_categories -> $category;
+		UPDATE $entities SET created = time::now();
 		RETURN $entities;
 	};
 		COMMIT TRANSACTION;
@@ -449,6 +450,12 @@ func (h *Handler) GetCategorySchema(data *pb.GenericFetchRequest) *pb.CategorySc
 		Help:  "Item quantity",
 	}
 
+	properties["price"] = &pb.Field{
+		Title: "Price",
+		Type:  "number",
+		Help:  "Price per piece",
+	}
+
 	properties["description"] = &pb.Field{
 		Title: "Description",
 		Type:  "string",
@@ -618,7 +625,7 @@ func (h *Handler) FieldsInheritance(data *pb.GenericFetchRequest) *pb.Inheritanc
 		{
 			Id:         "root",
 			Name:       "Root category",
-			FieldNames: []string{"Name", "Description", "Quantity"},
+			FieldNames: []string{"Name", "Description", "Quantity", "Price"},
 		},
 	}, res...)
 

@@ -20,6 +20,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 		routes.DELETE("/delete/:warehouseID", svc.Delete)
 		routes.GET("/info/:warehouseID", svc.GetInfo)
 		routes.GET("", svc.ListWarehouses)
+		routes.GET("/dashboard/:warehouseID", svc.Dashboard)
 		routes.DELETE("/users/delete/:warehouseID/:userID", svc.RemoveUser)
 		routes.PUT("/update/:warehouseID", svc.Update)
 		routes.PUT("/users/role", svc.ChangeRole)
@@ -59,6 +60,16 @@ func (svc *ServiceClient) AddUser(ctx *gin.Context) {
 	}
 
 	routes.AddUser(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) Dashboard(ctx *gin.Context) {
+	code, err := PermissionHandler(0, svc.Client, ctx)
+	if err != nil {
+		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		return
+	}
+
+	routes.Dashboard(ctx, svc.Client)
 }
 
 func (svc *ServiceClient) ChangeRole(ctx *gin.Context) {
