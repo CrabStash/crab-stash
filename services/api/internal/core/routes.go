@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/CrabStash/crab-stash/api/internal/auth"
 	"github.com/CrabStash/crab-stash/api/internal/core/routes"
 	"github.com/CrabStash/crab-stash/api/internal/warehouse"
@@ -306,10 +308,13 @@ func (svc *ServiceClient) FieldsInheritance(ctx *gin.Context) {
 		return
 	}
 
-	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
-	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
-		return
+	CategoryID := strings.Split(ctx.Param("id"), "/")[0]
+	if CategoryID != "root" {
+		code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
+		if err != nil {
+			ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+			return
+		}
 	}
 	routes.FieldsInheritance(ctx, svc.Client)
 }

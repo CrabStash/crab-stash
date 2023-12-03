@@ -597,27 +597,32 @@ func (h *Handler) GetEntityData(data *pb.GenericFetchRequest) *pb.GetEntityDataR
 // Misc
 
 func (h *Handler) FieldsInheritance(data *pb.GenericFetchRequest) *pb.InheritanceResponse {
-	queryRes, err := h.DB.Query("SELECT title, id, properties[*].title as fieldNames FROM (SELECT VALUE parents FROM ONLY $categoryID);", map[string]string{
-		"categoryID": data.EntityID,
-	})
+	var queryRes interface{}
+	var err error
+	var res []*pb.InheritanceResponse_Parent
+	if data.EntityID != "root" {
+		queryRes, err = h.DB.Query("SELECT title, id, properties[*].title as fieldNames FROM array::add((SELECT VALUE parents FROM ONLY $categoryID), $categoryID);", map[string]string{
+			"categoryID": data.EntityID,
+		})
 
-	if err != nil {
-		return &pb.InheritanceResponse{
-			Status: http.StatusInternalServerError,
-			Response: &pb.InheritanceResponse_Error{
-				Error: err.Error(),
-			},
+		if err != nil {
+			return &pb.InheritanceResponse{
+				Status: http.StatusInternalServerError,
+				Response: &pb.InheritanceResponse_Error{
+					Error: err.Error(),
+				},
+			}
 		}
-	}
 
-	res, err := surrealdb.SmartUnmarshal[[]*pb.InheritanceResponse_Parent](queryRes, nil)
+		res, err = surrealdb.SmartUnmarshal[[]*pb.InheritanceResponse_Parent](queryRes, nil)
 
-	if err != nil {
-		return &pb.InheritanceResponse{
-			Status: http.StatusInternalServerError,
-			Response: &pb.InheritanceResponse_Error{
-				Error: err.Error(),
-			},
+		if err != nil {
+			return &pb.InheritanceResponse{
+				Status: http.StatusInternalServerError,
+				Response: &pb.InheritanceResponse_Error{
+					Error: err.Error(),
+				},
+			}
 		}
 	}
 
