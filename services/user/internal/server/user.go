@@ -117,3 +117,9 @@ func (s *Server) InternalGetUserByUUIDCheck(ctx context.Context, req *pb.Interna
 	}
 	return usrID, nil
 }
+
+func (s *Server) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
+	res := s.H.ChangeUserPassword(req)
+
+	return res, nil
+}

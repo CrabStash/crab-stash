@@ -3,11 +3,20 @@ package db
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+
+	"golang.org/x/crypto/bcrypt"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/user/proto"
 	surrealdb "github.com/surrealdb/surrealdb.go"
 )
+
+type Transaction struct {
+	Result string `json:"result"`
+	Status string `json:"status"`
+	Time   string `json:"time"`
+}
 
 type Handler struct {
 	DB *surrealdb.DB
@@ -140,4 +149,56 @@ func (h *Handler) DbGetUserbyUUID(usr *pb.InternalGetUserByUUIDCheck) (*pb.Inter
 		return &pb.InternalGetUserByUUIDCheck{}, fmt.Errorf("error while unmarshaling user data: %v", err)
 	}
 	return userUnmarshal, nil
+}
+
+func (h *Handler) ChangeUserPassword(req *pb.ChangePasswordRequest) *pb.ChangePasswordResponse {
+
+	hashNewPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), 10)
+	if err != nil {
+		return &pb.ChangePasswordResponse{
+			Status:   http.StatusInternalServerError,
+			Response: "error while hashing password",
+		}
+	}
+
+	queryRes, _ := h.DB.Query(`
+	BEGIN TRANSACTION; 
+	LET $CurrentPassword = (SELECT VALUE passwd FROM ONLY $userID);
+	IF crypto::bcrypt::compare($CurrentPassword,$OldPassword) {
+		UPDATE $userID SET passwd = $NewPassword;
+	} ELSE {
+		THROW "Passwords don't match";
+	};
+	COMMIT TRANSACTION;
+	`, map[string]string{
+		"OldPassword": req.OldPassword,
+		"NewPassword": string(hashNewPassword),
+		"userID":      req.UserID,
+	})
+
+	transaction := make([]Transaction, 2)
+
+	err = surrealdb.Unmarshal(queryRes, &transaction)
+	if err != nil {
+		log.Println(err)
+		return &pb.ChangePasswordResponse{
+			Status:   http.StatusInternalServerError,
+			Response: "error while unmarshaling data",
+		}
+	}
+
+	if transaction[0].Status == "ERR" {
+		log.Println(err)
+
+		return &pb.ChangePasswordResponse{
+			Status:   http.StatusInternalServerError,
+			Response: transaction[1].Result,
+		}
+	}
+
+	return &pb.ChangePasswordResponse{
+		Status:   http.StatusOK,
+		Response: "Password Changed",
+	}
+
 }
