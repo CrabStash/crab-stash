@@ -18,6 +18,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 	routes.PUT("/update", svc.UpdateUserInfo)
 	routes.GET("/:id", svc.GetUserInfo)
 	routes.DELETE("/delete", svc.DeleteUser)
+	routes.POST("/changePassword", svc.ChangePassword)
 
 	return svc
 }
@@ -36,4 +37,8 @@ func (svc *ServiceClient) GetUserInfo(ctx *gin.Context) {
 
 func (svc *ServiceClient) DeleteUser(ctx *gin.Context) {
 	routes.DeleteUser(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) ChangePassword(ctx *gin.Context) {
+	routes.ChangePassword(ctx, svc.Client)
 }
