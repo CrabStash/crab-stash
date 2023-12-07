@@ -678,7 +678,15 @@ func (h *Handler) Count(id string, warehouseID string, target string) (int, erro
 
 	var queryString string
 	if target == "fields_to_warehouses" {
-		queryString = "SELECT count() FROM fields_to_warehouses WHERE out = $warehouseID GROUP ALL"
+		queryString = `
+		BEGIN TRANSACTION;
+		IF $id {
+			LET $inheritedFields = array::flatten(SELECT VALUE properties[*].id FROM array::add((SELECT VALUE parents FROM ONLY $id), $id));
+			RETURN SELECT count() FROM fields_to_warehouses WHERE out = $warehouseID AND in NOT IN $inheritedFields GROUP ALL;
+		} ELSE {
+			RETURN SELECT count() FROM fields_to_warehouses WHERE out = $warehouseID GROUP ALL;
+		};
+		COMMIT TRANSACTION;`
 	} else if target == "entities_to_categories" {
 		queryString = "SELECT count() FROM entities_to_categories WHERE out IN (SELECT VALUE id FROM categories WHERE parents CONTAINS $id OR id == $id) GROUP ALL;"
 	} else if target == "entities_to_categories" && id == "" {
@@ -722,11 +730,20 @@ func (h *Handler) ListFields(data *pb.PaginatedFieldFetchRequest, pageCount int)
 	}
 
 	queryRes, err := h.DB.Query(`
-	SELECT in.id as id, in.title as title, in.type as type FROM fields_to_warehouses WHERE out = $warehouseID LIMIT $limit START $page`,
+	BEGIN TRANSACTION;
+	IF $categoryID {
+		LET $inheritedFields = array::flatten(SELECT VALUE properties[*].id FROM array::add((SELECT VALUE parents FROM ONLY $categoryID), $categoryID));
+		RETURN SELECT in.id as id, in.title as title, in.type as type FROM fields_to_warehouses WHERE out = $warehouseID AND in.id NOT IN $inheritedFields LIMIT $limit START $page;
+	} ELSE {
+		RETURN SELECT in.id as id, in.title as title, in.type as type FROM fields_to_warehouses WHERE out = $warehouseID LIMIT $limit START $page;
+	};
+	COMMIT TRANSACTION;
+	`,
 		map[string]interface{}{
 			"warehouseID": data.WarehouseID,
 			"limit":       data.Limit,
 			"page":        data.Limit * page,
+			"categoryID":  data.ParentCategory,
 		})
 
 	if err != nil {

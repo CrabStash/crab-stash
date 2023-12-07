@@ -36,6 +36,7 @@ func ListFields(ctx *gin.Context, c pb.CoreServiceClient) {
 	payload.Limit = int32(limit)
 	payload.Page = int32(page)
 	payload.WarehouseID = strings.Split(ctx.Param("warehouseID"), "/")[0]
+	payload.ParentCategory = ctx.DefaultQuery("parentCategory", "")
 
 	_, err = valid.ValidateStruct(&payload)
 	if err != nil {
