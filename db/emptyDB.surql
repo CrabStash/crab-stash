@@ -82,4 +82,6 @@ DEFINE FIELD help ON TABLE fields type string
 DEFINE FIELD type ON TABLE fields type string
   ASSERT $value != NULL AND $value != NONE;
 
+DELETE user, warehouse, manages, categories, fields, entities;
+
 COMMIT TRANSACTION;

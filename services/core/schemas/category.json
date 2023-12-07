@@ -1,57 +1,59 @@
 {
-  "schema": {
-    "title": "Create category",
-    "description": "Fill the form to create category",
-    "type": "object",
-    "required": [
-      "name",
-      "categoryDesc",
-      "logo",
-      "parents",
-      "fields"
-    ],
-    "properties": {
-      "name": {
-        "type": "string",
-        "title": "Category Name",
-        "help": "The name of your category"
-      },
-      "desc": {
-        "type": "string",
-        "title": "Category description",
-        "help": "A description of your category"
-      },
-      "logo": {
-        "type": "string",
-        "title": "Logo",
-        "format": "data-url",
-        "help": "Accepted file types: *.jpg/jpeg and .png"
-      },
-      "parents": {
-        "title": "Category parents",
-        "type": "array",
-        "items": {
-          "type": "string"
+  "schema":{
+     "title":"Create category",
+     "description":"Fill the form to create category",
+     "type":"object",
+     "required":[
+        "title",
+        "description",
+        "logo",
+        "parents",
+        "properties"
+     ],
+     "properties":{
+        "title":{
+           "type":"string",
+           "title":"Category Name"
         },
-        "help": "Placement of your category in the categories tree"
-      },
-      "fields": {
-        "title": "Category fields",
-        "type": "array",
-        "items": {
-          "type": "string"
+        "description":{
+           "type":"string",
+           "title":"Category description"
         },
-        "help": "Fields that are a part of your category"
-      }
-    }
+        "logo":{
+           "type":"string",
+           "title":"Logo",
+           "format":"data-url"
+        },
+        "parents":{
+           "title":"Category parents",
+           "type":"array",
+           "description":"Select parent category. If you want to create root category, leave this field empty. Selected category path will be highlighted",
+           "items":{
+              "type":"string"
+           }
+        },
+        "properties":{
+           "title":"Category fields",
+           "type":"array",
+           "items":{
+              "type":"string"
+           }
+        }
+     }
   },
-  "uiSchema": {
-    "parents": {
-      "ui:widget": "parentsWidget"
-    },
-    "fields": {
-      "ui:widget": "fieldsWidget"
-    }
+  "uiSchema":{
+     "ui:order":[
+        "title",
+        "description",
+        "logo",
+        "parents",
+        "properties"
+     ],
+     "parents":{
+        "ui:widget":"parentsWidget"
+     },
+     "properties":{
+        "ui:widget":"fieldsWidget"
+     }
   }
 }
-

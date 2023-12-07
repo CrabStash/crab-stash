@@ -139,7 +139,7 @@ func (s *Server) GetEntityData(ctx context.Context, req *pb.GenericFetchRequest)
 // List
 func (s *Server) ListFields(ctx context.Context, req *pb.PaginatedFieldFetchRequest) (*pb.PaginatedFieldsFetchResponse, error) {
 
-	count, err := s.H.Count("", req.WarehouseID, "fields_to_warehouses")
+	count, err := s.H.Count(req.ParentCategory, req.WarehouseID, "fields_to_warehouses")
 
 	if err != nil {
 		log.Println(err)

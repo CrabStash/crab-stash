@@ -276,6 +276,14 @@ func (svc *ServiceClient) ListFields(ctx *gin.Context) {
 		return
 	}
 
+	if ctx.DefaultQuery("parentCategory", "") != "" {
+		code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
+		if err != nil {
+			ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+			return
+		}
+	}
+
 	routes.ListFields(ctx, svc.Client)
 }
 
