@@ -21,7 +21,7 @@ DEFINE FIELD passwd ON TABLE user TYPE string
 DEFINE FIELD avatar ON TABLE user TYPE string
   DEFAULT "https://google.com"
   ASSERT string::is::url($value);
-DEFINE FIELD default_warehouse ON TABLE user TYPE record(warehouse);
+DEFINE FIELD default_warehouse ON TABLE user TYPE option<record(warehouse)>;
 DEFINE FIELD owns ON TABLE user TYPE option<array>
   DEFAULT []
   ASSERT array::distinct($value) == $value;
