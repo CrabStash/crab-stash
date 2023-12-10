@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/auth/proto"
 	"github.com/gin-gonic/gin"
@@ -39,10 +38,8 @@ func Logout(ctx *gin.Context, c pb.AuthServiceClient) {
 		return
 	}
 
-	exp := time.Now().Add(-time.Hour * 24)
-
-	ctx.SetCookie("refresh_token", "", int(exp.Unix()), "/", os.Getenv("DOMAIN"), false, true)
-	ctx.SetCookie("access_token", "", int(exp.Unix()), "/", os.Getenv("DOMAIN"), false, true)
+	ctx.SetCookie("refresh_token", "", -1, "/", os.Getenv("DOMAIN"), false, true)
+	ctx.SetCookie("access_token", "", -1, "/", os.Getenv("DOMAIN"), false, true)
 
 	ctx.JSON(int(res.Status), res)
 }

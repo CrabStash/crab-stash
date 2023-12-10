@@ -22,6 +22,8 @@ github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231203182509-ee4c4d5e7be9
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231203182509-ee4c4d5e7be9/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231203190636-19a053345f88 h1:1x0s+M6o3dHS4d0T+GEGFTw5sKLwwp1gQD77pbUKcB0=
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231203190636-19a053345f88/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231210152151-8f37d08c4444 h1:78b2aJSvGDlwHz58WKF5k47/7S1b13rFI8tAH6Io6wE=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231210152151-8f37d08c4444/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/golang/protobuf v1.5.3 h1:KhyjKVUg7Usr/dYsdSqoFveMYd5ko72D+zANwlG1mmg=

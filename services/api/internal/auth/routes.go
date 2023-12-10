@@ -15,7 +15,7 @@ func RegisterRoutes(r *gin.Engine) *ServiceClient {
 	routes := r.Group("/auth")
 	routes.POST("/register", svc.Register)
 	routes.POST("/login", svc.Login)
-	routes.GET("/logout", a.AuthRequired, svc.Logout)
+	routes.GET("/logout", a.AuthRequired(), svc.Logout)
 	routes.GET("/refresh", svc.Refresh)
 
 	return svc

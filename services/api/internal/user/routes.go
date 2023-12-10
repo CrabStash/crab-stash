@@ -12,7 +12,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 	}
 	a := auth.InitAuthMiddleware(authSvc)
 	routes := r.Group("/user")
-	routes.Use(a.AuthRequired)
+	routes.Use(a.AuthRequired())
 
 	routes.GET("/me", svc.MeInfo)
 	routes.PUT("/update", svc.UpdateUserInfo)
