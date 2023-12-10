@@ -259,7 +259,7 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 		return &pb.ValidateResponse{
 			Status: http.StatusInternalServerError,
 			Response: &pb.ValidateResponse_Error{
-				Error: "error while validating jwt",
+				Error: err.Error(),
 			},
 		}, nil
 	}

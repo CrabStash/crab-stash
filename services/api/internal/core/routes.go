@@ -17,7 +17,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient, warehouseSvc *wa
 	}
 
 	routes := r.Group("core")
-	routes.Use(a.AuthRequired)
+	routes.Use(a.AuthRequired())
 	schemas := routes.Group("schemas")
 	category := routes.Group("category")
 	entity := routes.Group("entity")
@@ -54,7 +54,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient, warehouseSvc *wa
 func (svc *ServiceClient) CreateCategory(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.CreateCategory(ctx, svc.Client)
@@ -63,7 +63,7 @@ func (svc *ServiceClient) CreateCategory(ctx *gin.Context) {
 func (svc *ServiceClient) CreateField(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
@@ -73,13 +73,13 @@ func (svc *ServiceClient) CreateField(ctx *gin.Context) {
 func (svc *ServiceClient) CreateEntity(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.CreateEntity(ctx, svc.Client)
@@ -89,13 +89,13 @@ func (svc *ServiceClient) CreateEntity(ctx *gin.Context) {
 func (svc *ServiceClient) EditCategory(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.EditCategory(ctx, svc.Client)
@@ -104,13 +104,13 @@ func (svc *ServiceClient) EditCategory(ctx *gin.Context) {
 func (svc *ServiceClient) EditField(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "fields_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.EditField(ctx, svc.Client)
@@ -119,19 +119,19 @@ func (svc *ServiceClient) EditField(ctx *gin.Context) {
 func (svc *ServiceClient) EditEntity(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "entities_to_categories")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
@@ -142,13 +142,13 @@ func (svc *ServiceClient) EditEntity(ctx *gin.Context) {
 func (svc *ServiceClient) DeleteCategory(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.DeleteCategory(ctx, svc.Client)
@@ -157,13 +157,13 @@ func (svc *ServiceClient) DeleteCategory(ctx *gin.Context) {
 func (svc *ServiceClient) DeleteField(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "fields_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.DeleteField(ctx, svc.Client)
@@ -172,19 +172,19 @@ func (svc *ServiceClient) DeleteField(ctx *gin.Context) {
 func (svc *ServiceClient) DeleteEntity(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "entities_to_categories")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
@@ -203,13 +203,13 @@ func (svc *ServiceClient) NewFieldSchema(ctx *gin.Context) {
 func (svc *ServiceClient) GetCategorySchema(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.GetCategorySchema(ctx, svc.Client)
@@ -218,13 +218,13 @@ func (svc *ServiceClient) GetCategorySchema(ctx *gin.Context) {
 func (svc *ServiceClient) GetCategoryData(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.GetCategoryData(ctx, svc.Client)
@@ -233,13 +233,13 @@ func (svc *ServiceClient) GetCategoryData(ctx *gin.Context) {
 func (svc *ServiceClient) GetFieldData(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "fields_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 	routes.GetFieldData(ctx, svc.Client)
@@ -248,19 +248,19 @@ func (svc *ServiceClient) GetFieldData(ctx *gin.Context) {
 func (svc *ServiceClient) GetEntityData(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	code, err = CoreMiddleware(svc.Client, ctx, "entities_to_categories")
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
@@ -272,14 +272,14 @@ func (svc *ServiceClient) GetEntityData(ctx *gin.Context) {
 func (svc *ServiceClient) ListFields(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
 	if ctx.DefaultQuery("parentCategory", "") != "" {
 		code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 		if err != nil {
-			ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+			ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 			return
 		}
 	}
@@ -290,7 +290,7 @@ func (svc *ServiceClient) ListFields(ctx *gin.Context) {
 func (svc *ServiceClient) ListCategories(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(0, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
@@ -300,7 +300,7 @@ func (svc *ServiceClient) ListCategories(ctx *gin.Context) {
 func (svc *ServiceClient) ListEntities(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(0, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
@@ -312,7 +312,7 @@ func (svc *ServiceClient) ListEntities(ctx *gin.Context) {
 func (svc *ServiceClient) FieldsInheritance(ctx *gin.Context) {
 	code, err := warehouse.PermissionHandler(2, svc.Warehouse, ctx)
 	if err != nil {
-		ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
 
@@ -320,7 +320,7 @@ func (svc *ServiceClient) FieldsInheritance(ctx *gin.Context) {
 	if CategoryID != "root" {
 		code, err = CoreMiddleware(svc.Client, ctx, "categories_to_warehouses")
 		if err != nil {
-			ctx.JSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
+			ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 			return
 		}
 	}

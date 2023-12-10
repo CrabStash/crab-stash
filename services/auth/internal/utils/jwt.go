@@ -29,10 +29,10 @@ func (w *JwtWrapper) SignJWT(userID string, isRefresh bool) (token string, token
 	var pk string
 	token_uuid = uuid.NewV4().String()
 	if isRefresh {
-		exp = time.Now().Local().Add(time.Hour * time.Duration(w.RefreshExp)).Unix()
+		exp = time.Now().Local().Add(time.Hour * 24 * time.Duration(w.RefreshExp)).Unix()
 		pk = w.RefreshSecret
 	} else {
-		exp = time.Now().Local().Add(time.Hour * time.Duration(w.TokenExp)).Unix()
+		exp = time.Now().Local().Add(time.Hour * 24 * time.Duration(w.TokenExp)).Unix()
 		pk = w.TokenSecret
 	}
 
