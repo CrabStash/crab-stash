@@ -818,9 +818,9 @@ func (h *Handler) ListEntities(data *pb.PaginatedEntitiesFetchRequest, pageCount
 	}
 
 	if data.Id == "" {
-		queryString = "SELECT in.id as id, in.name as name, in.description as description FROM entities_to_categories WHERE out IN (SELECT VALUE in FROM categories_to_warehouses WHERE out = $warehouseID) LIMIT $limit START $page"
+		queryString = "SELECT in.id as id, in.name as name, in.quantity as quantity, in.price as price, in.description as description, out.title as category_title, out.id as category_id FROM entities_to_categories WHERE out IN (SELECT VALUE in FROM categories_to_warehouses WHERE out = $warehouseID) LIMIT $limit START $page"
 	} else {
-		queryString = "SELECT in.id as id, in.name as name, in.description as description FROM entities_to_categories WHERE out IN (SELECT VALUE id FROM categories WHERE parents CONTAINS $id OR id == $id) LIMIT $limit START $page"
+		queryString = "SELECT in.id as id, in.name as name, in.quantity as quantity, in.price as price, in.description as description, out.title as category_title, out.id as category_id FROM entities_to_categories WHERE out IN (SELECT VALUE id FROM categories WHERE parents CONTAINS $id OR id == $id) LIMIT $limit START $page"
 	}
 
 	queryRes, err := h.DB.Query(queryString,
