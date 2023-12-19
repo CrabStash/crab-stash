@@ -68,6 +68,13 @@ func Init() Handler {
 // Create
 
 func (h *Handler) CreateField(data *pb.CreateFieldRequest) *pb.GenericCreateResponse {
+	if data.FormData.Type == "date" {
+		data.FormData.Type = "string"
+		data.FormData.Format = "date"
+	} else if data.FormData.Type == "datetime" {
+		data.FormData.Type = "string"
+		data.FormData.Format = "date-time"
+	}
 	queryRes, err := h.DB.Query(`
 		BEGIN TRANSACTION;
 		LET $field = type::thing("fields", rand::uuid());
@@ -252,6 +259,13 @@ func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateRe
 
 // Editing
 func (h *Handler) EditField(data *pb.EditFieldRequest) *pb.GenericEditDeleteResponse {
+	if data.FormData.Type == "date" {
+		data.FormData.Type = "string"
+		data.FormData.Format = "date"
+	} else if data.FormData.Type == "datetime" {
+		data.FormData.Type = "string"
+		data.FormData.Type = "date-time"
+	}
 	_, err := h.DB.Query("UPDATE $field MERGE $data", map[string]interface{}{
 		"field": data.FieldID,
 		"data":  data.FormData,
@@ -514,7 +528,7 @@ func (h *Handler) GetCategoryData(data *pb.GenericFetchRequest) *pb.GetCategoryD
 }
 
 func (h *Handler) GetFieldData(data *pb.GenericFetchRequest) *pb.GetFieldDataResponse {
-	queryRes, err := h.DB.Query("SELECT title, type, help FROM $field", map[string]string{"field": data.EntityID})
+	queryRes, err := h.DB.Query("SELECT title, type, help, format FROM $field", map[string]string{"field": data.EntityID})
 
 	if err != nil {
 		return &pb.GetFieldDataResponse{
