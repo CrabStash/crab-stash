@@ -68,13 +68,6 @@ func Init() Handler {
 // Create
 
 func (h *Handler) CreateField(data *pb.CreateFieldRequest) *pb.GenericCreateResponse {
-	if data.FormData.Type == "date" {
-		data.FormData.Type = "string"
-		data.FormData.Format = "date"
-	} else if data.FormData.Type == "datetime" {
-		data.FormData.Type = "string"
-		data.FormData.Format = "date-time"
-	}
 	queryRes, err := h.DB.Query(`
 		BEGIN TRANSACTION;
 		LET $field = type::thing("fields", rand::uuid());
@@ -153,7 +146,6 @@ func (h *Handler) CreateCategory(data *pb.CreateCategoryRequest) *pb.GenericCrea
 		}
 	}
 
-	log.Println(queryRes)
 	var finalRes []Transaction
 
 	err = surrealdb.Unmarshal(queryRes, &finalRes)
@@ -259,13 +251,6 @@ func (h *Handler) CreateEntity(data *pb.CreateEntityRequest) *pb.GenericCreateRe
 
 // Editing
 func (h *Handler) EditField(data *pb.EditFieldRequest) *pb.GenericEditDeleteResponse {
-	if data.FormData.Type == "date" {
-		data.FormData.Type = "string"
-		data.FormData.Format = "date"
-	} else if data.FormData.Type == "datetime" {
-		data.FormData.Type = "string"
-		data.FormData.Type = "date-time"
-	}
 	_, err := h.DB.Query("UPDATE $field MERGE $data", map[string]interface{}{
 		"field": data.FieldID,
 		"data":  data.FormData,
@@ -450,6 +435,13 @@ func (h *Handler) GetCategorySchema(data *pb.GenericFetchRequest) *pb.CategorySc
 			Type:  field.Type,
 			Help:  field.Help,
 		}
+		if properties[field.Id].Type == "date" {
+			properties[field.Id].Type = "string"
+			properties[field.Id].Format = "date"
+		} else if properties[field.Id].Type == "datetime" {
+			properties[field.Id].Type = "string"
+			properties[field.Id].Format = "date-time"
+		}
 	}
 
 	properties["name"] = &pb.Field{
@@ -506,8 +498,6 @@ func (h *Handler) GetCategoryData(data *pb.GenericFetchRequest) *pb.GetCategoryD
 
 	res, err := surrealdb.SmartUnmarshal[[]*pb.Category](queryRes, nil)
 
-	log.Println(res, queryRes)
-
 	if err != nil {
 		return &pb.GetCategoryDataResponse{
 			Status: http.StatusInternalServerError,
@@ -528,7 +518,7 @@ func (h *Handler) GetCategoryData(data *pb.GenericFetchRequest) *pb.GetCategoryD
 }
 
 func (h *Handler) GetFieldData(data *pb.GenericFetchRequest) *pb.GetFieldDataResponse {
-	queryRes, err := h.DB.Query("SELECT title, type, help, format FROM $field", map[string]string{"field": data.EntityID})
+	queryRes, err := h.DB.Query("SELECT title, type, help FROM $field", map[string]string{"field": data.EntityID})
 
 	if err != nil {
 		return &pb.GetFieldDataResponse{
@@ -540,8 +530,6 @@ func (h *Handler) GetFieldData(data *pb.GenericFetchRequest) *pb.GetFieldDataRes
 	}
 
 	res, err := surrealdb.SmartUnmarshal[[]*pb.Field](queryRes, nil)
-
-	log.Println(res, queryRes)
 
 	if err != nil {
 		return &pb.GetFieldDataResponse{
