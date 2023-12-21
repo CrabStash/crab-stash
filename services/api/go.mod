@@ -3,7 +3,7 @@ module github.com/CrabStash/crab-stash/api
 go 1.18
 
 require (
-	github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221171740-10d909662155
+	github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221182447-489f2a561bbb
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1

@@ -84,6 +84,12 @@ github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221094059-c2d85c7cc2ee
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221094059-c2d85c7cc2ee/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221171740-10d909662155 h1:Xabn+gPov4wHjoOIIEf7i7cKJa4JIHHaTcPj0mnyjxs=
 github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221171740-10d909662155/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221181621-bcfc9f7f9ceb h1:0VBw3mMxsBkFnVqr/ZBT/Eo7BgEUU9cbIQOxfXOrYkI=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221181621-bcfc9f7f9ceb/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221182047-5d629c7ec7cc h1:vaJBY4vIKMyQLT9y7iKBNbjou5RhBzVxh5pe0OQXcTc=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221182047-5d629c7ec7cc/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221182447-489f2a561bbb h1:54RROhC+g9nQRbvzc73ig7LjDT3DVIBVqRMIYEAkShw=
+github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20231221182447-489f2a561bbb/go.mod h1:KgbdXG/0Mo89X9SLKk0NCoVxeYK7to9LiwAhAlx8oqU=
 github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 h1:DklsrG3dyBCFEj5IhUbnKptjxatkF07cF2ak3yi77so=
 github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2/go.mod h1:WaHUgvxTVq04UNunO+XhnAqY/wQc+bxr74GqbsZ/Jqw=
 github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1O2AihPM=
