@@ -55,7 +55,7 @@ func (h *Handler) Dashboard(data *pb.DashboardRequest) *pb.DashboardResponse {
 	LET $entitiesCount = math::sum((SELECT VALUE in.quantity || 0 as quantity FROM entities_to_categories WHERE out.id IN $categories));
 	LET $uniqueEntities = (SELECT count() FROM entities_to_categories WHERE out.id IN $categories GROUP ALL);
 	LET $employees = (SELECT count() FROM manages WHERE out.id = $warehouseID GROUP ALL);
-	LET $newestEntities = (SELECT in.name as name, in.description as description, in.created, out.id as category_id FROM entities_to_categories WHERE out.id IN $categories ORDER BY in.created DESC LIMIT 8);
+	LET $newestEntities = (SELECT in.name as name, in.description as description, in.created, in.price as price, in.quantity as quantity, out.id as category_id, out.title as category_title FROM entities_to_categories WHERE out.id IN $categories ORDER BY in.created DESC LIMIT 8);
 	RETURN { warehouseValue: math::fixed($warehouseValue, 2), entitiesCount: { all: $entitiesCount, unique: $uniqueEntities[0].count || 0 }, employees: $employees[0].count, newestEntities: $newestEntities };
 	COMMIT TRANSACTION;
 	`, map[string]string{
