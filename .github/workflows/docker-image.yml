@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      MSNAME: api
+      MSNAME: auth
 
     steps:
     - uses: actions/checkout@v3
