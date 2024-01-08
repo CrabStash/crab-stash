@@ -32,7 +32,7 @@ COPY services/$MSNAME .
 RUN go mod tidy && go get -d -v ./cmd/$MSNAME/
 
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build \
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
   -ldflags='-w -s -extldflags "-static"' -a \
   -o /go/bin/exec ./cmd/$MSNAME/
 
