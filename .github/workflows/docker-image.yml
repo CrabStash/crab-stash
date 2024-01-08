@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        platform: [ linux/amd64 ]  # Specify the desired platform, e.g., x86_64
+
     env:
       MSNAME: auth
 
@@ -22,7 +26,8 @@ jobs:
         docker build . \
           --build-arg MSNAME=${{ env.MSNAME }} \
           --file docker/Dockerfile \
-          --tag ghcr.io/crabstash/${{ env.MSNAME }}:${{ github.run_number }}
+          --tag ghcr.io/crabstash/${{ env.MSNAME }}:${{ github.run_number }} \
+          --platform ${{ matrix.platform }}
     - name: Log in to GitHub Container Registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u CrabStash --password-stdin
     - name: Push Docker image to GitHub Container Registry
