@@ -15,7 +15,7 @@ jobs:
         platform: [ linux/amd64 ]  # Specify the desired platform, e.g., x86_64
 
     env:
-      MSNAME: auth
+      MSNAME: core
 
     steps:
     - uses: actions/checkout@v3
