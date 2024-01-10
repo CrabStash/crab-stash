@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+	"strings"
+
 	"github.com/CrabStash/crab-stash/api/internal/auth"
 	"github.com/CrabStash/crab-stash/api/internal/core"
 	"github.com/CrabStash/crab-stash/api/internal/user"
@@ -14,7 +17,7 @@ func main() {
 	valid.SetFieldsRequiredByDefault(true)
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     strings.Split(os.Getenv("ALLOWED_ORIGINS"), ","),
 		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "accept", "origin", "X-Requested-With", "Authorization", "Accept-Encoding", "Content-Length", "Cache-Control"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},

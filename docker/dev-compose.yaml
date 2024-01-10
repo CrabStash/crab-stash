@@ -31,6 +31,7 @@ services:
       REFRESH_EXP: "7"
       TOKEN_EXP: "2"
       DOMAIN: "localhost"
+      ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:6000"
 
   user:
     image: crabstash-user
