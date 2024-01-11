@@ -55,7 +55,7 @@ func (h *Handler) Dashboard(data *pb.DashboardRequest) *pb.DashboardResponse {
 	LET $entitiesCount = math::sum((SELECT VALUE in.quantity || 0 as quantity FROM entities_to_categories WHERE out.id IN $categories));
 	LET $uniqueEntities = (SELECT count() FROM entities_to_categories WHERE out.id IN $categories GROUP ALL);
 	LET $employees = (SELECT count() FROM manages WHERE out.id = $warehouseID GROUP ALL);
-	LET $newestEntities = (SELECT in.name as name, in.description as description, in.created, in.price as price, in.quantity as quantity, out.id as category_id, out.title as category_title FROM entities_to_categories WHERE out.id IN $categories ORDER BY in.created DESC LIMIT 8);
+	LET $newestEntities = (SELECT in.name as name, in.description as description, in.created, in.price as price, in.quantity as quantity, out.id as category_id, out.title as category_title, in.id as entity_id FROM entities_to_categories WHERE out.id IN $categories ORDER BY in.created DESC LIMIT 8);
 	RETURN { warehouseValue: math::fixed($warehouseValue, 2), entitiesCount: { all: $entitiesCount, unique: $uniqueEntities[0].count || 0 }, employees: $employees[0].count, newestEntities: $newestEntities };
 	COMMIT TRANSACTION;
 	`, map[string]string{
@@ -95,8 +95,7 @@ func (h *Handler) Dashboard(data *pb.DashboardRequest) *pb.DashboardResponse {
 func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 	res, err := h.DB.Query(`
 	BEGIN TRANSACTION;
-	LET $warehouse = type::thing("warehouse", rand::uuid());
-	CREATE $warehouse CONTENT {
+	CREATE $warehouseID CONTENT {
 		name: $name,
 		desc: $desc,
 		logo: $logo,
@@ -104,18 +103,19 @@ func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 		isPhysical: $isPhysical,
 		capacity: $capacity
 	} RETURN id;
-	UPDATE $userID SET owns += $warehouse RETURN NONE;
-	IF (SELECT VALUE default_warehouse FROM ONLY $userID) IS NONE { UPDATE $userID SET default_warehouse = $warehouse };
-	RELATE $userID -> manages -> $warehouse SET role = $role RETURN NONE;
+	UPDATE $userID SET owns += $warehouseID RETURN NONE;
+	IF (SELECT VALUE default_warehouse FROM ONLY $userID) IS NONE { UPDATE $userID SET default_warehouse = $warehouseID };
+	RELATE $userID -> manages -> $warehouseID SET role = $role RETURN NONE;
 	COMMIT TRANSACTION;
 	`, map[string]interface{}{
-		"userID":     data.OwnerID,
-		"name":       data.Name,
-		"desc":       data.Desc,
-		"logo":       data.Logo,
-		"isPhysical": data.IsPhysical,
-		"capacity":   data.Capacity,
-		"role":       pb.Roles_ROLE_OWNER,
+		"userID":      data.OwnerID,
+		"name":        data.Name,
+		"desc":        data.Desc,
+		"logo":        data.Logo,
+		"isPhysical":  data.IsPhysical,
+		"capacity":    data.Capacity,
+		"role":        pb.Roles_ROLE_OWNER,
+		"warehouseID": data.ID,
 	})
 
 	if err != nil {
@@ -127,12 +127,14 @@ func (h *Handler) CreateWarehouse(data *pb.CreateRequest) (string, error) {
 
 	err = surrealdb.Unmarshal(res, &finalRes)
 
+	log.Println(res)
+
 	if err != nil {
 		log.Println(err)
 		return "", fmt.Errorf("error while unmarshaling data")
 	}
 
-	warehouseID, ok := finalRes[1].Result[0]["id"].(string)
+	warehouseID, ok := finalRes[0].Result[0]["id"].(string)
 	if !ok {
 		log.Println(err)
 		return "", fmt.Errorf("error while asserting type")

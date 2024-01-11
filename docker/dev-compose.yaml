@@ -32,6 +32,9 @@ services:
       TOKEN_EXP: "2"
       DOMAIN: "localhost"
       ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:6000"
+      GOOGLE_APPLICATION_CREDENTIALS: "/credentials/gcp.json"
+    volumes: 
+    - ./gcp.json:/credentials/gcp.json
 
   user:
     image: crabstash-user

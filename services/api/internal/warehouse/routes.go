@@ -2,14 +2,16 @@ package warehouse
 
 import (
 	"github.com/CrabStash/crab-stash/api/internal/auth"
+	"github.com/CrabStash/crab-stash/api/internal/utils"
 	"github.com/CrabStash/crab-stash/api/internal/warehouse/routes"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
+func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient, utils *utils.Utils) *ServiceClient {
 	a := auth.InitAuthMiddleware(authSvc)
 	svc := &ServiceClient{
 		Client: InitServiceClient(),
+		Utils:  utils,
 	}
 
 	routes := r.Group("warehouse")
@@ -31,7 +33,7 @@ func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
 }
 
 func (svc *ServiceClient) Create(ctx *gin.Context) {
-	routes.Create(ctx, svc.Client)
+	routes.Create(ctx, svc.Client, svc.Utils)
 }
 
 func (svc *ServiceClient) GetInfo(ctx *gin.Context) {
@@ -49,7 +51,7 @@ func (svc *ServiceClient) Update(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(code, gin.H{"status": code, "response": gin.H{"error": err.Error()}})
 		return
 	}
-	routes.Update(ctx, svc.Client)
+	routes.Update(ctx, svc.Client, svc.Utils)
 }
 
 func (svc *ServiceClient) AddUser(ctx *gin.Context) {

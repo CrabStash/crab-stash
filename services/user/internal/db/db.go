@@ -63,13 +63,24 @@ func (h *Handler) GetMeInfo(data *pb.MeInfoRequest) (*pb.MeInfoResponse_Data, er
 
 func (h *Handler) DbUpdateUserInfo(usr *pb.UpdateUserInfoRequest) error {
 
-	_, err := h.DB.Query("UPDATE $userID MERGE $data", map[string]interface{}{
+	queryRes, err := h.DB.Query("UPDATE $userID MERGE $data", map[string]interface{}{
 		"userID": usr.UserID,
 		"data":   usr.Data,
 	})
 
 	if err != nil {
 		return fmt.Errorf("error while updating user info: %v", err)
+	}
+
+	var transaction []Transaction
+	err = surrealdb.Unmarshal(queryRes, &transaction)
+
+	if err != nil {
+		return fmt.Errorf("error while marshaling response: %v", err)
+	}
+
+	if transaction[0].Status == "ERR" {
+		return fmt.Errorf("%s", transaction[0].Result)
 	}
 
 	return nil
