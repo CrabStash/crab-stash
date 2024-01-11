@@ -47,6 +47,7 @@ func (utils *Utils) UploadFile(fileHeader *multipart.FileHeader, fileName string
 	}
 
 	o := utils.bucketClient.Bucket(bucket).Object(fileName)
+	acl := o.ACL()
 	ctx := context.Background()
 	wc := o.NewWriter(ctx)
 
@@ -58,6 +59,9 @@ func (utils *Utils) UploadFile(fileHeader *multipart.FileHeader, fileName string
 		return "", fmt.Errorf("error while saving file to bucket: %s", err)
 	}
 
+	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		return "", fmt.Errorf("error while setting file tu public: %e", err)
+	}
 	return fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucket, fileName), nil
 
 }
