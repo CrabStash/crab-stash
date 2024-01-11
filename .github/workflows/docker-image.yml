@@ -12,10 +12,11 @@ jobs:
 
     strategy:
       matrix:
-        platform: [ linux/amd64 ]  # Specify the desired platform, e.g., x86_64
+        platform: [linux/amd64]
+        msname: ["auth", "api", "user", "warehouse", "core"]
 
     env:
-      MSNAME: auth
+      MSNAME: ${{ matrix.msname }}
 
     steps:
     - uses: actions/checkout@v3
