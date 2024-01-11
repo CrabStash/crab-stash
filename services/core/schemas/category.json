@@ -6,7 +6,6 @@
      "required":[
         "title",
         "description",
-        "logo",
         "parents",
         "properties"
      ],
@@ -18,11 +17,6 @@
         "description":{
            "type":"string",
            "title":"Category description"
-        },
-        "logo":{
-           "type":"string",
-           "title":"Logo",
-           "format":"data-url"
         },
         "parents":{
            "title":"Category parents",
@@ -45,7 +39,6 @@
      "ui:order":[
         "title",
         "description",
-        "logo",
         "parents",
         "properties"
      ],

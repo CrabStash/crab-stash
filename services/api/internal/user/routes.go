@@ -3,12 +3,14 @@ package user
 import (
 	"github.com/CrabStash/crab-stash/api/internal/auth"
 	"github.com/CrabStash/crab-stash/api/internal/user/routes"
+	"github.com/CrabStash/crab-stash/api/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient) *ServiceClient {
+func RegisterRoutes(r *gin.Engine, authSvc *auth.ServiceClient, utilsSvc *utils.Utils) *ServiceClient {
 	svc := &ServiceClient{
 		Client: InitServiceClient(),
+		Utils:  utilsSvc,
 	}
 	a := auth.InitAuthMiddleware(authSvc)
 	routes := r.Group("/user")
@@ -28,7 +30,7 @@ func (svc *ServiceClient) MeInfo(ctx *gin.Context) {
 }
 
 func (svc *ServiceClient) UpdateUserInfo(ctx *gin.Context) {
-	routes.UpdateUserInfo(ctx, svc.Client)
+	routes.UpdateUserInfo(ctx, svc.Client, svc.Utils)
 }
 
 func (svc *ServiceClient) GetUserInfo(ctx *gin.Context) {

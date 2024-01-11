@@ -5,11 +5,13 @@ import (
 	"os"
 
 	pb "github.com/CrabStash/crab-stash-protofiles/user/proto"
+	"github.com/CrabStash/crab-stash/api/internal/utils"
 	"google.golang.org/grpc"
 )
 
 type ServiceClient struct {
 	Client pb.UserServiceClient
+	Utils  *utils.Utils
 }
 
 func InitServiceClient() pb.UserServiceClient {

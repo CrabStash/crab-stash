@@ -18,9 +18,8 @@ DEFINE FIELD lastName ON TABLE user TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
 DEFINE FIELD passwd ON TABLE user TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
-DEFINE FIELD avatar ON TABLE user TYPE string
-  DEFAULT "https://google.com"
-  ASSERT string::is::url($value);
+DEFINE FIELD avatar ON TABLE user TYPE option<string>
+  ASSERT $value == NONE || string::is::url($value);
 DEFINE FIELD default_warehouse ON TABLE user TYPE option<record(warehouse)>;
 DEFINE FIELD owns ON TABLE user TYPE option<array>
   DEFAULT []
@@ -33,7 +32,7 @@ DEFINE FIELD name ON TABLE warehouse TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
 DEFINE FIELD desc ON TABLE warehouse TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
-DEFINE FIELD logo ON TABLE warehouse TYPE string
+DEFINE FIELD logo ON TABLE warehouse TYPE option<string>
   ASSERT string::is::url($value);
 DEFINE FIELD owner ON TABLE warehouse TYPE record(user)
   ASSERT $value != NULL AND $value != NONE;
