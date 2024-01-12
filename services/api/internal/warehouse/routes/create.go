@@ -31,21 +31,18 @@ func Create(ctx *gin.Context, c pb.WarehouseServiceClient, utils *utils.Utils) {
 
 	payload.ID = fmt.Sprintf("warehouse:⟨%s⟩", warehouseID)
 
-	logo, err := ctx.FormFile("logo")
+	logo, _ := ctx.FormFile("logo")
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
-		return
+	if logo != nil {
+		logoURL, err := utils.UploadFile(logo, payload.ID)
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "response": gin.H{"error": err.Error()}})
+			return
+		}
+
+		payload.Logo = logoURL
 	}
-
-	logoURL, err := utils.UploadFile(logo, payload.ID)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "response": gin.H{"error": err.Error()}})
-		return
-	}
-
-	payload.Logo = logoURL
 
 	_, err = valid.ValidateStruct(&payload)
 
@@ -57,11 +54,13 @@ func Create(ctx *gin.Context, c pb.WarehouseServiceClient, utils *utils.Utils) {
 
 	res, _ := c.CreateWarehouse(context.Background(), &payload)
 	if res.Status >= 300 {
-		err = utils.DeleteFile(payload.ID)
+		if logo != nil {
+			err = utils.DeleteFile(payload.ID)
 
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": fmt.Sprintf("error while creating warehouse: %s, error while deleting file after invalid warehouse creation: %e", res.Response, err)}})
-			return
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": fmt.Sprintf("error while creating warehouse: %s, error while deleting file after invalid warehouse creation: %e", res.Response, err)}})
+				return
+			}
 		}
 		ctx.JSON(int(res.Status), res)
 		return

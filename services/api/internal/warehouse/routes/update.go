@@ -22,23 +22,20 @@ func Update(ctx *gin.Context, c pb.WarehouseServiceClient, utils *utils.Utils) {
 	}
 	payload.WarehouseID = strings.Split(ctx.Param("warehouseID"), "/")[0]
 
-	logo, err := ctx.FormFile("logo")
+	logo, _ := ctx.FormFile("logo")
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "response": gin.H{"error": err.Error()}})
-		return
+	if logo != nil {
+		logoURL, err := utils.UploadFile(logo, payload.WarehouseID)
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "response": gin.H{"error": err.Error()}})
+			return
+		}
+
+		payload.Logo = logoURL
 	}
 
-	logoURL, err := utils.UploadFile(logo, payload.WarehouseID)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "response": gin.H{"error": err.Error()}})
-		return
-	}
-
-	payload.Logo = logoURL
-
-	_, err = valid.ValidateStruct(&payload)
+	_, err := valid.ValidateStruct(&payload)
 
 	if err != nil {
 		log.Println(err)

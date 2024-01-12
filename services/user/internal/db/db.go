@@ -18,6 +18,11 @@ type Transaction struct {
 	Time   string `json:"time"`
 }
 
+type SmallTransaction struct {
+	Status string `json:"status"`
+	Time   string `json:"time"`
+}
+
 type Handler struct {
 	DB *surrealdb.DB
 }
@@ -72,7 +77,7 @@ func (h *Handler) DbUpdateUserInfo(usr *pb.UpdateUserInfoRequest) error {
 		return fmt.Errorf("error while updating user info: %v", err)
 	}
 
-	var transaction []Transaction
+	var transaction []SmallTransaction
 	err = surrealdb.Unmarshal(queryRes, &transaction)
 
 	if err != nil {
@@ -80,7 +85,7 @@ func (h *Handler) DbUpdateUserInfo(usr *pb.UpdateUserInfoRequest) error {
 	}
 
 	if transaction[0].Status == "ERR" {
-		return fmt.Errorf("%s", transaction[0].Result)
+		return fmt.Errorf("error while querying db")
 	}
 
 	return nil
