@@ -29,8 +29,6 @@ WORKDIR $GOPATH/src/
 
 COPY services/$MSNAME .
 
-COPY services/core/schemas /schemas
-
 RUN go mod tidy && go get -d -v ./cmd/$MSNAME/
 
 # Build the binary
@@ -52,6 +50,7 @@ COPY --from=builder /etc/group /etc/group
 
 # Copy our static executable
 COPY --from=builder /go/bin/exec /go/bin/exec
+COPY services/core/schemas /schemas
 
 # Use an unprivileged user.
 USER msuser:msuser
