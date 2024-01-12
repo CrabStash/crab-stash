@@ -32,8 +32,7 @@ DEFINE FIELD name ON TABLE warehouse TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
 DEFINE FIELD desc ON TABLE warehouse TYPE string
   ASSERT $value != NULL AND $value != NONE AND string::len($value) > 0;
-DEFINE FIELD logo ON TABLE warehouse TYPE option<string>
-  ASSERT string::is::url($value);
+DEFINE FIELD logo ON TABLE warehouse TYPE option<string>;
 DEFINE FIELD owner ON TABLE warehouse TYPE record(user)
   ASSERT $value != NULL AND $value != NONE;
 DEFINE FIELD isPhysical ON TABLE warehouse TYPE bool

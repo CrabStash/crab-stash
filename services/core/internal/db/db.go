@@ -778,9 +778,9 @@ func (h *Handler) ListCategories(data *pb.PaginatedCategoriesFetchRequest) (*pb.
 	var queryString string
 
 	if data.Id == "" {
-		queryString = "SELECT id, title, description, [] == (SELECT VALUE id FROM categories WHERE $parent.id IN parents) as isChildless FROM categories WHERE parents == []"
+		queryString = "SELECT in.id as id, in.title as title, in.description as description, [] == (SELECT VALUE id FROM categories WHERE $parent.id IN parents) as isChildless FROM categories_to_warehouses WHERE in.parents == [] AND out.id == $warehouseID"
 	} else {
-		queryString = "SELECT id, title, description, [] == (SELECT VALUE id FROM categories WHERE $parent.id IN parents) as isChildless FROM categories WHERE array::at(parents, -1) == $id"
+		queryString = "SELECT in.id as id, in.title as title, in.description as description, [] == (SELECT VALUE id FROM categories WHERE $parent.id IN parents) as isChildless FROM categories_to_warehouses WHERE array::at(in.parents, -1) == $id AND out.id == $warehouseID"
 	}
 
 	queryRes, err := h.DB.Query(queryString,
