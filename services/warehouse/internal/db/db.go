@@ -151,6 +151,7 @@ func (h *Handler) GetInfo(data *pb.GetInfoRequest) (*pb.GetInfoResponse_Data, er
 
 	if err != nil {
 		log.Println(err)
+		log.Println(queryRes)
 		return &pb.GetInfoResponse_Data{}, fmt.Errorf("error while querying db: %v", err)
 	}
 

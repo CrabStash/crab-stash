@@ -780,13 +780,13 @@ func (h *Handler) ListCategories(data *pb.PaginatedCategoriesFetchRequest) (*pb.
 	if data.Id == "" {
 		queryString = "SELECT in.id as id, in.title as title, in.description as description, [] == (SELECT VALUE id FROM categories WHERE $parent.id IN parents) as isChildless FROM categories_to_warehouses WHERE in.parents == [] AND out.id == $warehouseID"
 	} else {
-		queryString = "SELECT in.id as id, in.title as title, in.description as description, [] == (SELECT VALUE id FROM categories WHERE $parent.id IN parents) as isChildless FROM categories_to_warehouses WHERE array::at(in.parents, -1) == $id AND out.id == $warehouseID"
+		queryString = "SELECT in.id as id, in.title as title, in.description as description, [] == (SELECT VALUE id FROM categories WHERE $parent.id IN parents) as isChildless FROM categories_to_warehouses WHERE array::at(in.parents, -1) == $category_id AND out.id == $warehouseID"
 	}
 
 	queryRes, err := h.DB.Query(queryString,
 		map[string]interface{}{
 			"warehouseID": data.WarehouseID,
-			"id":          data.Id,
+			"category_id": data.Id,
 		})
 
 	if err != nil {
