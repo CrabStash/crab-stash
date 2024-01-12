@@ -80,8 +80,6 @@ services:
       SURREALDB_ADDR: "ws://surrealdb:8000/rpc"
       SURREAL_USER: "root"
       SURREAL_PASSWD: "root"
-    volumes: 
-    - ../services/core/schemas:/schemas
 
   auth:
     image: crabstash-auth

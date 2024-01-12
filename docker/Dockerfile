@@ -29,6 +29,8 @@ WORKDIR $GOPATH/src/
 
 COPY services/$MSNAME .
 
+COPY services/core/schemas /schemas
+
 RUN go mod tidy && go get -d -v ./cmd/$MSNAME/
 
 # Build the binary
