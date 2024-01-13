@@ -158,7 +158,6 @@ func (h *Handler) GetInfo(data *pb.GetInfoRequest) (*pb.GetInfoResponse_Data, er
 
 	if err != nil {
 		log.Println(err)
-		log.Println(queryRes)
 		return &pb.GetInfoResponse_Data{}, fmt.Errorf("error while unmarshalling data: %v", err)
 	}
 
@@ -222,14 +221,40 @@ func (h *Handler) AddUserToWarehouse(data *pb.AddUsersRequest) error {
 }
 
 func (h *Handler) RemoveUserFromWarehouse(data *pb.RemoveUserRequest) error {
-	_, err := h.DB.Query("DELETE manages WHERE in=$userID AND out=$warehouse;", map[string]string{
+	targetRole, err := h.CheckRole(&pb.InternalFetchWarehouseRoleRequest{
+		WarehouseID: data.WarehouseID,
+		UserID:      data.UserIds,
+	})
+
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("error while checking target user role")
+	}
+
+	callingRole, err := h.CheckRole(&pb.InternalFetchWarehouseRoleRequest{
+		WarehouseID: data.WarehouseID,
+		UserID:      data.UUID,
+	})
+
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("error while calling users role")
+	}
+
+	if targetRole.Role >= callingRole.Role {
+		return fmt.Errorf("cannot delete user with permission level equal or higher to yours")
+	}
+
+	_, err = h.DB.Query("DELETE manages WHERE in=$userID AND out=$warehouse;", map[string]string{
 		"warehouse": data.WarehouseID,
 		"userID":    data.UserIds,
 	})
+
 	if err != nil {
 		log.Println(err)
 		return fmt.Errorf("error while adding user to warehouse: %v", err)
 	}
+
 	return nil
 }
 
@@ -288,6 +313,13 @@ func (h *Handler) DeleteAccount(data *pb.InternalDeleteAccRequest) (*emptypb.Emp
 }
 
 func (h *Handler) ChangeRole(data *pb.ChangeRoleRequest) (*pb.ChangeRoleResponse, error) {
+
+	if data.Uuid == data.TargetUserID {
+		return &pb.ChangeRoleResponse{
+			Status: http.StatusBadRequest,
+		}, fmt.Errorf("user cannot change his own role")
+	}
+
 	role, err := h.CheckRole(&pb.InternalFetchWarehouseRoleRequest{
 		WarehouseID: data.WarehouseID,
 		UserID:      data.Uuid,

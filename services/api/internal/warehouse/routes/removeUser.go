@@ -15,6 +15,8 @@ func RemoveUser(ctx *gin.Context, c pb.WarehouseServiceClient) {
 	payload := pb.RemoveUserRequest{}
 	payload.UserIds = strings.Split(ctx.Param("userID"), "/")[0]
 	payload.WarehouseID = strings.Split(ctx.Param("warehouseID"), "/")[0]
+	uuid, _ := ctx.Get("uuid")
+	payload.UUID = uuid.(string)
 
 	_, err := valid.ValidateStruct(&payload)
 

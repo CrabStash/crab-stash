@@ -3,7 +3,7 @@ module github.com/CrabStash/crab-stash/warehouse
 go 1.18
 
 require (
-	github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20240112222405-db174aadccba
+	github.com/CrabStash/crab-stash-protofiles v0.3.14-0.20240113120550-6aa7884d0037
 	github.com/surrealdb/surrealdb.go v0.2.1
 	google.golang.org/grpc v1.56.2
 	google.golang.org/protobuf v1.31.0
